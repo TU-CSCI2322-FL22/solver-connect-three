@@ -1,7 +1,7 @@
-data Player = X | O deriving Show
+data Player = X | O | U deriving (Show, Eq)
 type Play = (Int, Int)
 data Victory = Won Player | Tie | Ongoing deriving Show
-type Microboard = [Maybe Player]
+type Microboard = [Player]
 type Microgame = (Microboard, Victory)
 type Macroboard = [Microgame]
 type Macrogame = (Macroboard, Victory)
@@ -13,7 +13,7 @@ type Macrogame = (Macroboard, Victory)
 -- 3  |  4  |  5
 -- ____________
 -- 6  |  7  |  8
-
+-- Checking every move if the individual game has been won - if so, then place a move on the big board
 checkWin :: Microboard -> Victory
 checkWin = undefined
 
@@ -37,9 +37,9 @@ checkPlay play board =
                               aux (2,0) = 6
                               aux (2,1) = 7
                               aux (2,2) = 8
-        playWithTileHead = drop (numOfTile) play
+        playWithTileHead = drop (numOfTile) board
         currentTile      = head playWithTileHead
-    in currentTile == Nothing --This line with change if we change the implementation of Microboard
+    in currentTile == U --This line with change if we change the implementation of Microboard
     
 
 -- Check if a move is legal
@@ -48,10 +48,6 @@ checkLegal = undefined
 
 legalPlays :: Macrogame -> [Play]
 legalPlays = undefined
-
--- Checking every move if the individual game has been won - if so, then place a move on the big board
-checkWin :: Macroboard -> Macroboard
-checkWin = undefined
 
 -- Show function
 showMacroboard :: Macroboard -> String
