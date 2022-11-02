@@ -80,6 +80,6 @@ showBoard board = [
     else if (i `mod` 2) == 0 && (i <29) then head (show (board !! ((i-12 `div` 2))))
     else 'U'  
     | i <- [0..29]]
-showMacroboard :: Macroboard -> String
-showMacroboard = undefined
 
+showMacroboard :: Macroboard -> String
+showMacroboard = [showBoard (fst (board !! i)) | i <- [0..8]]
