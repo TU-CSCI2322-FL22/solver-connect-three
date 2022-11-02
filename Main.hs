@@ -1,7 +1,7 @@
-data Player = X | O deriving Show
+data Player = X | O | U deriving (Show, Eq)
 type Play = (Int, Int)
 data Victory = Won Player | Tie | Ongoing deriving Show
-type Microboard = [Maybe Player]
+type Microboard = [Player]
 -- type Microgame = ([Maybe Player], Victory)
 type Microgame = (Microboard, Victory)
 -- type Macroboard = [([Maybe Player], Victory)]
