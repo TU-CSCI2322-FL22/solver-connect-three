@@ -25,8 +25,22 @@ makePlay :: Macrogame -> Play -> Maybe Macroboard -- if it's legal
 makePlay = undefined
 
 -- Checking if a given tile has been played
-checkPlay :: Play -> Bool
-checkPlay = undefined
+checkPlay :: Play -> Microboard -> Bool
+checkPlay play board = 
+    let numOfTile = aux play
+                        where aux (0,0) = 0
+                              aux (0,1) = 1
+                              aux (0,2) = 2
+                              aux (1,0) = 3
+                              aux (1,1) = 4
+                              aux (1,2) = 5
+                              aux (2,0) = 6
+                              aux (2,1) = 7
+                              aux (2,2) = 8
+        playWithTileHead = drop (numOfTile) play
+        currentTile      = head playWithTileHead
+    in currentTile == Nothing --This line with change if we change the implementation of Microboard
+    
 
 -- Check if a move is legal
 checkLegal :: Play -> Bool
