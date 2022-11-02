@@ -4,11 +4,13 @@ Joey:
 
 Preston:
 	checkLegal
-	legalPlays
 
 Colin: 
 	checkPlay
-	checkWin
+	
 
 Some sort of collaborative effort:
 	makePlay
+	legalPlays
+
+we made this division of labor and tried updating it as we did stuff but but we kinda just did whatever wasn't taken as we were working together
