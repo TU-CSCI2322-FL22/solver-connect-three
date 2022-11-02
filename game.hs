@@ -6,7 +6,11 @@ data Board = Board State State State State State State State State State
 type Macroboard = Macroboard Board Board Board Board Board Board Board Board Board
 
 --makePlay :: Play -> Game
-checkWin :: [Game] -> [Game] 
+checkWin :: Board -> Bool
+checkWin = undefined
+
+checkMacrowin :: Macroboard -> Bool
+checkMacrowin = undefined
 
 --Play -> Game Making a play on a specific tile of a specific board
 makePlay :: Play -> Game
