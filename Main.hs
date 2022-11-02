@@ -12,22 +12,22 @@ checkWin = undefined
 checkMacrowin :: Macroboard -> Bool
 checkMacrowin = undefined
 
---Play -> Game Making a play on a specific tile of a specific board
+-- Making a play on a specific tile of a specific board
 makePlay :: Play -> Game
 makePlay = undefined
 
---Play -> Bool Checking if a given tile has been played
+-- Checking if a given tile has been played
 checkPlay :: Play -> Bool
 checkPlay = undefined
 
---Play -> Bool Check if a move is legal
+-- Check if a move is legal
 checkLegal :: Play -> Bool
 checkLegal = undefined
 
---Macroboard -> Macroboard Checking every move if the individual game has been won - if so, then place a move on the big board
+-- Checking every move if the individual game has been won - if so, then place a move on the big board
 checkWin :: Macroboard -> Macroboard
 checkWin = undefined
 
---Macroboard -> Str Show function
+-- Show function
 showMacroboard :: Macroboard -> Str
 showMacroboard = undefined
