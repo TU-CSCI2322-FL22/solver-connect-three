@@ -1,9 +1,11 @@
-data State = X | O | U
-data Play = Game Int Int State
-type Victory = State
-type Game = (Board, Victory)
-data Board = Board State State State State State State State State State
-type Macroboard = Macroboard Board Board Board Board Board Board Board Board Board
+data Player = X | O deriving Show
+type Play = (Int, Int)
+data Victory = Won Player | Tie | Ongoing deriving Show
+type Microboard = [Maybe Player]
+type Microgame = (Microboard, Victory)
+type Macroboard = [Microgame]
+type Macrogame = (Macroboard, Victory)
+
 
 -- Board positions are numbered as follows:
 -- 0  |  1  |  2
@@ -12,23 +14,31 @@ type Macroboard = Macroboard Board Board Board Board Board Board Board Board Boa
 -- ____________
 -- 6  |  7  |  8
 
-checkWin :: Board -> State
+checkWin :: Microboard -> Victory
 checkWin = undefined
 
-checkMacrowin :: Macroboard -> State
+checkMacrowin :: Macroboard -> Victory
 checkMacrowin = undefined
 
-makePlay :: Play -> Game
+-- Making a play on a specific tile of a specific board
+makePlay :: Macrogame -> Play -> Maybe Macroboard -- if it's legal
 makePlay = undefined
 
+-- Checking if a given tile has been played
 checkPlay :: Play -> Bool
 checkPlay = undefined
 
+-- Check if a move is legal
 checkLegal :: Play -> Bool
 checkLegal = undefined
 
+legalPlays :: Macrogame -> [Play]
+legalPlays = undefined
+
+-- Checking every move if the individual game has been won - if so, then place a move on the big board
 checkWin :: Macroboard -> Macroboard
 checkWin = undefined
 
-showMacroboard :: Macroboard -> Str
+-- Show function
+showMacroboard :: Macroboard -> String
 showMacroboard = undefined
