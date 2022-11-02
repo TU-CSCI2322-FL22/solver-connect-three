@@ -39,7 +39,7 @@ checkPlay play board =
                               aux (2,2) = 8
         playWithTileHead = drop (numOfTile) play
         currentTile      = head playWithTileHead
-    in currentTile == Nothing --This line with change if we change the implementation of Microboard
+    in currentTile == Nothing --This line will change if we change the implementation of Microboard
     
 
 -- Check if a move is legal
