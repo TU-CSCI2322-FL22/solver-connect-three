@@ -1,0 +1,14 @@
+Joey:
+	Both checkWin functions
+	Show function
+
+Preston:
+	checkLegal
+	legalPlays
+
+Colin: 
+	checkPlay
+	checkWin
+
+Some sort of collaborative effort:
+	makePlay
