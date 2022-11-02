@@ -2,8 +2,12 @@ data Player = X | O deriving Show
 type Play = (Int, Int)
 data Victory = Won Player | Tie | Ongoing deriving Show
 type Microboard = [Maybe Player]
+-- type Microgame = ([Maybe Player], Victory)
 type Microgame = (Microboard, Victory)
+-- type Macroboard = [([Maybe Player], Victory)]
+-- type Macroboard = [(Microboard, Victory)]
 type Macroboard = [Microgame]
+-- type Macrogame = ([Microgame], Victory)
 type Macrogame = (Macroboard, Victory)
 
 
@@ -14,6 +18,7 @@ type Macrogame = (Macroboard, Victory)
 -- ____________
 -- 6  |  7  |  8
 
+-- Checking every move if the individual game has been won - if so, then place a move on the big board
 checkWin :: Microboard -> Victory
 checkWin = undefined
 
@@ -28,16 +33,17 @@ makePlay = undefined
 checkPlay :: Play -> Bool
 checkPlay = undefined
 
--- Check if a move is legal
+-- TO-DO - I feel pretty confident about this
+-- OBJECTIVE: Check if a move is legal
 checkLegal :: Play -> Bool
-checkLegal = undefined
+checkLegal play = play `elem` [(x,y) | x <- [0..8], y <- [0..8]]
 
-legalPlays :: Macrogame -> [Play]
-legalPlays = undefined
-
--- Checking every move if the individual game has been won - if so, then place a move on the big board
-checkWin :: Macroboard -> Macroboard
-checkWin = undefined
+-- TO-DO - what to do with original Macrogame input?
+-- OBJECTIVE: Return all legal plays (for a Macrogame?)
+-- (ORIGINAL): legalPlays :: Macrogame -> [Play]
+-- (ORIGINAL): legalPlays macrogame = undefined
+legalPlays :: [Play]
+legalPlays = [(x,y) | x <- [0..8], y <- [0..8]]
 
 -- Show function
 showMacroboard :: Macroboard -> String
