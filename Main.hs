@@ -5,7 +5,7 @@ data Victory = Won Player | Tie | Ongoing deriving (Show, Eq)
 type Microboard = [Maybe Player]
 type Microgame = (Microboard, Victory)
 type Macroboard = [Microgame]
-type Macrogame = (Macroboar, Player)
+type Macrogame = (Macroboard, Player)
 
 
 -- Board positions are numbered as follows:
