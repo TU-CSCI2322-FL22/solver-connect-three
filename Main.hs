@@ -1,9 +1,14 @@
-data Player = X | O | U deriving (Eq, Show)
+
+data Player = X | O | U deriving (Show, Eq)
 type Play = (Int, Int)
-data Victory = Won Player | Tie | Ongoing deriving (Eq, Show)
+data Victory = Won Player | Tie | Ongoing deriving (Show, Eq)
 type Microboard = [Player]
+-- type Microgame = ([Player], Victory)
 type Microgame = (Microboard, Victory)
+-- type Macroboard = [([Maybe Player], Victory)]
+-- type Macroboard = [(Microboard, Victory)]
 type Macroboard = [Microgame]
+-- type Macrogame = ([Microgame], Victory)
 type Macrogame = (Macroboard, Victory)
 
 
@@ -14,6 +19,7 @@ type Macrogame = (Macroboard, Victory)
 -- ____________
 -- 6  |  7  |  8
 
+-- Checking every move if the individual game has been won - if so, then place a move on the big board
 checkWin :: Microboard -> Victory
 checkWin [ X,  X,  X, _, _, _, _, _, _] = Won X
 checkWin [_, _, _,  X,  X,  X, _, _, _] = Won X
@@ -57,16 +63,34 @@ makePlay :: Macrogame -> Play -> Maybe Macroboard -- if it's legal
 makePlay = undefined
 
 -- Checking if a given tile has been played
-checkPlay :: Play -> Bool
-checkPlay = undefined
+checkPlay :: Play -> Microboard -> Bool
+checkPlay play board = 
+    let numOfTile = aux play
+                        where aux (0,0) = 0
+                              aux (0,1) = 1
+                              aux (0,2) = 2
+                              aux (1,0) = 3
+                              aux (1,1) = 4
+                              aux (1,2) = 5
+                              aux (2,0) = 6
+                              aux (2,1) = 7
+                              aux (2,2) = 8
+        playWithTileHead = drop (numOfTile) board
+        currentTile      = head playWithTileHead
+    in currentTile == U
+    
 
--- Check if a move is legal
+-- TO-DO - I feel pretty confident about this
+-- OBJECTIVE: Check if a move is legal
 checkLegal :: Play -> Bool
-checkLegal = undefined
+checkLegal play = play `elem` [(x,y) | x <- [0..8], y <- [0..8]]
 
-legalPlays :: Macrogame -> [Play]
-legalPlays = undefined
-
+-- TO-DO - what to do with original Macrogame input?
+-- OBJECTIVE: Return all legal plays (for a Macrogame?)
+-- (ORIGINAL): legalPlays :: Macrogame -> [Play]
+-- (ORIGINAL): legalPlays macrogame = undefined
+legalPlays :: [Play]
+legalPlays = [(x,y) | x <- [0..8], y <- [0..8]]
 
 -- Show function
 showBoard :: Microboard -> String
