@@ -73,7 +73,7 @@ checkPlay play board =
                               aux (2,2) = 8
         playWithTileHead = drop (numOfTile) board
         currentTile      = head playWithTileHead
-    in currentTile == U
+    in currentTile /= Nothing
     
 
 -- TO-DO - I feel pretty confident about this
