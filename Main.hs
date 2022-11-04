@@ -1,10 +1,11 @@
-data Player = X | O | U deriving (Eq, Show)
+
+data Player = X | O deriving (Show, Eq)
 type Play = (Int, Int)
-data Victory = Won Player | Tie | Ongoing deriving (Eq, Show)
-type Microboard = [Player]
+data Victory = Won Player | Tie | Ongoing deriving (Show, Eq)
+type Microboard = [Maybe Player]
 type Microgame = (Microboard, Victory)
 type Macroboard = [Microgame]
-type Macrogame = (Macroboard, Victory)
+type Macrogame = (Macroboard, Player)
 
 
 -- Board positions are numbered as follows:
@@ -13,25 +14,26 @@ type Macrogame = (Macroboard, Victory)
 -- 3  |  4  |  5
 -- ____________
 -- 6  |  7  |  8
+
 -- Checking every move if the individual game has been won - if so, then place a move on the big board
 checkWin :: Microboard -> Victory
-checkWin [ X,  X,  X, _, _, _, _, _, _] = Won X
-checkWin [_, _, _,  X,  X,  X, _, _, _] = Won X
-checkWin [_, _, _, _, _, _,  X,  X,  X] = Won X
-checkWin [ X, _, _,  X, _, _,  X, _, _] = Won X
-checkWin [_,  X, _, _,  X, _, _,  X, _] = Won X
-checkWin [_, _,  X, _, _,  X, _, _,  X] = Won X
-checkWin [ X, _, _, _,  X, _, _, _,  X] = Won X
-checkWin [_, _,  X, _,  X, _,  X, _, _] = Won X
-checkWin [ O,  O,  O, _, _, _, _, _, _] = Won O
-checkWin [_, _, _,  O,  O,  O, _, _, _] = Won O
-checkWin [_, _, _, _, _, _,  O,  O,  O] = Won O
-checkWin [ O, _, _,  O, _, _,  O, _, _] = Won O
-checkWin [_,  O, _, _,  O, _, _,  O, _] = Won O
-checkWin [_, _,  O, _, _,  O, _, _,  O] = Won O
-checkWin [ O, _, _, _,  O, _, _, _,  O] = Won O
-checkWin [_, _,  O, _,  O, _,  O, _, _] = Won O
-checkWin board = if U `elem` board then Ongoing else Tie
+checkWin [Just X, Just X, Just X, _, _, _, _, _, _] = Won X
+checkWin [_, _, _, Just X, Just X, Just X, _, _, _] = Won X
+checkWin [_, _, _, _, _, _, Just X, Just X, Just X] = Won X
+checkWin [Just X, _, _, Just X, _, _, Just X, _, _] = Won X
+checkWin [_, Just X, _, _, Just X, _, _, Just X, _] = Won X
+checkWin [_, _, Just X, _, _, Just X, _, _, Just X] = Won X
+checkWin [Just X, _, _, _, Just X, _, _, _, Just X] = Won X
+checkWin [_, _, Just X, _, Just X, _, Just X, _, _] = Won X
+checkWin [Just O, Just O, Just O, _, _, _, _, _, _] = Won O
+checkWin [_, _, _, Just O, Just O, Just O, _, _, _] = Won O
+checkWin [_, _, _, _, _, _, Just O, Just O, Just O] = Won O
+checkWin [Just O, _, _, Just O, _, _, Just O, _, _] = Won O
+checkWin [_, Just O, _, _, Just O, _, _, Just O, _] = Won O
+checkWin [_, _, Just O, _, _, Just O, _, _, Just O] = Won O
+checkWin [Just O, _, _, _, Just O, _, _, _, Just O] = Won O
+checkWin [_, _, Just O, _, Just O, _, Just O, _, _] = Won O
+checkWin board = if Nothing `elem` board then Ongoing else Tie
 
 checkMacrowin :: Macroboard -> Victory
 checkMacrowin [(_, Won X), (_, Won X), (_, Won X), _, _, _, _, _, _] = Won X
@@ -74,12 +76,17 @@ checkPlay play board =
     in currentTile == U
     
 
--- Check if a move is legal
+-- TO-DO - I feel pretty confident about this
+-- OBJECTIVE: Check if a move is legal
 checkLegal :: Play -> Bool
-checkLegal = undefined
+checkLegal play = play `elem` [(x,y) | x <- [0..8], y <- [0..8]]
 
-legalPlays :: Macrogame -> [Play]
-legalPlays = undefined
+-- TO-DO - what to do with original Macrogame input?
+-- OBJECTIVE: Return all legal plays (for a Macrogame?)
+-- (ORIGINAL): legalPlays :: Macrogame -> [Play]
+-- (ORIGINAL): legalPlays macrogame = undefined
+legalPlays :: [Play]
+legalPlays = [(x,y) | x <- [0..8], y <- [0..8]]
 
 -- Show function
 showBoard :: Microboard -> String
@@ -91,8 +98,8 @@ showBoard board = [
     else if (i `mod` 2) == 0 && (i < 5) then head (show (board !! (i `div` 2)))
     else if (i `mod` 2) == 0 && (i <17) then head (show (board !! (i-6 `div` 2)))
     else if (i `mod` 2) == 0 && (i <29) then head (show (board !! ((i-12 `div` 2))))
-    else 'U'  
+    else ' '  
     | i <- [0..29]]
-showMacroboard :: Macroboard -> String
-showMacroboard = undefined
 
+showMacroboard :: Macroboard -> String
+showMacroboard = [showBoard (fst (board !! i)) | i <- [0..8]]
