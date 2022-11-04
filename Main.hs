@@ -1,4 +1,3 @@
-
 data Player = X | O deriving (Show, Eq)
 type Play = (Int, Int)
 data Victory = Won Player | Tie | Ongoing deriving (Show, Eq)
@@ -102,4 +101,4 @@ showBoard board = [
     | i <- [0..29]]
 
 showMacroboard :: Macroboard -> String
-showMacroboard = [showBoard (fst (board !! i)) | i <- [0..8]]
+showMacroboard board = concat [showBoard (fst (board !! i)) ++ "\n \n \n"  | i <- [0..8]]
