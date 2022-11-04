@@ -101,4 +101,4 @@ showBoard board = [
     | i <- [0..29]]
 
 showMacroboard :: Macroboard -> String
-showMacroboard board = concat [showBoard (fst (board !! i)) ++ "\n \n \n"  | i <- [0..8]]
+showMacroboard board = concat [showBoard (fst (board !! i)) ++ "^BOARD" ++ show (i+1) ++ "^\n \n \n"  | i <- [0..8]]
