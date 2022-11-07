@@ -140,4 +140,4 @@ showLine board line =
         (lines (showBoard board1) !! (line-12)) ++ "|" ++ (lines (showBoard board2) !! (line-12)) ++ "|" ++ (lines (showBoard board3) !! (line-12))
     
 showMacroboard :: Macroboard -> String
-showMacroboard board = concat [showBoard (fst (board !! i)) ++ "^BOARD" ++ show (i+1) ++ "^\n \n \n"  | i <- [0..8]]
+showMacroboard board = concat [showLine x ++ "/n" | x <- [0..17]]
