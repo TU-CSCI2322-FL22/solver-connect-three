@@ -88,6 +88,26 @@ legalPlays :: [Play]
 legalPlays = [(x,y) | x <- [0..8], y <- [0..8]]
 
 -- Show function
+
+-- X| |X|O|X|O|X| |O
+-- -----|-----|-----
+-- O|X| |X| |O|X|O|X
+-- -----|-----|-----
+-- X|O|X|X| |X|O|X|O
+-- -----|-----|-----
+-- X| |X|O|X|O|X| |O
+-- -----|-----|-----
+-- O|X|O| |X|O|X|O|X
+-- -----|-----|-----
+-- X| |X|X|O|X|O| |O
+-- -----|-----|-----
+-- X|O|X|O| |O| |X|O
+-- -----|-----|-----
+-- O|X|O|X|X|O|X| |X
+-- -----|-----|-----
+-- X| |X|X|O| |O|X|O
+
+
 showBoard :: Microboard -> String
 showBoard board = [
     if (i > 5 && i < 11) then head "_"
@@ -100,5 +120,24 @@ showBoard board = [
     else ' '  
     | i <- [0..29]]
 
+showLine :: Macroboard -> Int -> String
+showLine board line = 
+    if line `mod` 2 == 0 then "-----|-----|-----"
+    else if line < 6 then do
+        let (board1, victory1) = board !! 0
+        let (board2, victory2) = board !! 1
+        let (board3, victory3) = board !! 2
+        (lines (showBoard board1) !! line) ++ "|" ++ (lines (showBoard board2) !! line) ++ "|" ++ (lines (showBoard board3) !! line)  
+    else if line < 12 then do
+        let (board1, victory1) = board !! 3
+        let (board2, victory2) = board !! 4
+        let (board3, victory3) = board !! 5
+        (lines (showBoard board1) !! (line-6)) ++ "|" ++ (lines (showBoard board2) !! (line-6)) ++ "|" ++ (lines (showBoard board3) !! (line-6))
+    else do
+        let (board1, victory1) = board !! 6
+        let (board2, victory2) = board !! 7
+        let (board3, victory3) = board !! 8
+        (lines (showBoard board1) !! (line-12)) ++ "|" ++ (lines (showBoard board2) !! (line-12)) ++ "|" ++ (lines (showBoard board3) !! (line-12))
+    
 showMacroboard :: Macroboard -> String
 showMacroboard board = concat [showBoard (fst (board !! i)) ++ "^BOARD" ++ show (i+1) ++ "^\n \n \n"  | i <- [0..8]]
