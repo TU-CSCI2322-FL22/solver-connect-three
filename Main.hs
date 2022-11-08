@@ -102,10 +102,9 @@ showBoard board = [
     else ' '  
     | i <- [0..29]]
 
-<<<<<<< HEAD
+
 --showMacroboard :: Macroboard -> String
 --showMacroboard = [showBoard (fst (board !! i)) | i <- [0..8]]
-=======
 showMacroboard :: Macroboard -> String
 showMacroboard board = concat [showBoard (fst (board !! i)) ++ "\n \n \n"  | i <- [0..8]]
->>>>>>> 06f7a16734678abb8ef9ec46eaefa55365cb8805
+
