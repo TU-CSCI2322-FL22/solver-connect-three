@@ -56,24 +56,41 @@ checkMacrowin [_, _, (_, Won O), _, (_, Won O), _, (_, Won O), _, _] = Won O
 checkMacrowin board = if Ongoing `elem` map snd board then Ongoing else Tie
 
 -- Making a play on a specific tile of a specific board
-makePlay :: Macrogame -> Play -> Maybe Macroboard -- if it's legal
-makePlay macrogame play =
-    if ((checkLegal play)) then undefined
-    else Nothing 
+
+--We are going to assume play is legal because we will check if
+--any user-inputted plays are legal in our actual implementation
+
+playToTile :: Play -> Int
+playToTile (0,0) = 0
+playToTile (0,1) = 1
+playToTile (0,2) = 2
+playToTile (1,0) = 3
+playToTile (1,1) = 4
+playToTile (1,2) = 5
+playToTile (2,0) = 6
+playToTile (2,1) = 7
+playToTile (2,2) = 8
+
+makeMicroPlay :: Microgame -> Play -> Player -> Microgame
+makeMicroPlay game play player =
+    let numOfTile   = playToTile play
+        board       = fst game
+        vicState    = snd game
+        newBoard    = [if ((board !! numOfTile) == tl) then Just player else tl | tl <- board]
+        newVicState = checkWin newBoard
+    in (newBoard, newVicState)
+
+makeMacroPlay :: Macrogame -> Player ->  Macrogame
+makeMacroPlay macrogame nextPlayer = 
+    let board       = fst macrogame
+    in  ([(b, checkWin b) | (b, v) <- board], nextPlayer)
+    
+    
 
 -- Checking if a given tile has been played
 checkPlay :: Play -> Microboard -> Bool
 checkPlay play board = 
-    let numOfTile = aux play
-                        where aux (0,0) = 0
-                              aux (0,1) = 1
-                              aux (0,2) = 2
-                              aux (1,0) = 3
-                              aux (1,1) = 4
-                              aux (1,2) = 5
-                              aux (2,0) = 6
-                              aux (2,1) = 7
-                              aux (2,2) = 8
+    let numOfTile        = playToTile play
         playWithTileHead = drop (numOfTile) board
         currentTile      = head playWithTileHead
     in currentTile /= Nothing
