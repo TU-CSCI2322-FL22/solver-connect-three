@@ -1,3 +1,5 @@
+module Main where
+
 data Player = X | O deriving (Show, Eq)
 type Play = (Int, Int)
 data Victory = Won Player | Tie | Ongoing deriving (Show, Eq)
@@ -108,3 +110,6 @@ showBoard board = [
 showMacroboard :: Macroboard -> String
 showMacroboard board = concat [showBoard (fst (board !! i)) ++ "\n \n \n"  | i <- [0..8]]
 
+main :: IO ()
+main = do
+    undefined
