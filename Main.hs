@@ -56,7 +56,9 @@ checkMacrowin board = if Ongoing `elem` map snd board then Ongoing else Tie
 
 -- Making a play on a specific tile of a specific board
 makePlay :: Macrogame -> Play -> Maybe Macroboard -- if it's legal
-makePlay = undefined
+makePlay macrogame play =
+    if ((checkLegal play)) then undefined
+    else Nothing 
 
 -- Checking if a given tile has been played
 checkPlay :: Play -> Microboard -> Bool
@@ -74,7 +76,7 @@ checkPlay play board =
         playWithTileHead = drop (numOfTile) board
         currentTile      = head playWithTileHead
     in currentTile /= Nothing
-    
+--testing to make sure my branch is working
 
 -- TO-DO - I feel pretty confident about this
 -- OBJECTIVE: Check if a move is legal
@@ -101,5 +103,5 @@ showBoard board = [
     else ' '  
     | i <- [0..29]]
 
-showMacroboard :: Macroboard -> String
-showMacroboard = [showBoard (fst (board !! i)) | i <- [0..8]]
+--showMacroboard :: Macroboard -> String
+--showMacroboard = [showBoard (fst (board !! i)) | i <- [0..8]]
