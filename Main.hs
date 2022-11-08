@@ -82,10 +82,8 @@ makeMicroPlay game play player =
 
 makeMacroPlay :: Macrogame -> Player ->  Macrogame
 makeMacroPlay macrogame nextPlayer = 
-    let board       = fst macrogame
+    let board = fst macrogame
     in  ([(b, checkWin b) | (b, v) <- board], nextPlayer)
-    
-    
 
 -- Checking if a given tile has been played
 checkPlay :: Play -> Microboard -> Bool
