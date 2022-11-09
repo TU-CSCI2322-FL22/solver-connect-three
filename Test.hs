@@ -19,7 +19,8 @@ microboardEight  = take 9 (repeat Nothing)
 microboardNine   = take 9 (repeat Nothing)
 
 -- Other/Optional Test Boards
-microboardTen = [X, O, X, O, playerVarX, playerVarO, Nothing, Nothing, Nothing]
+-- ERROR: haskell doesn't like the Nothings in microboardTen
+-- microboardTen = [X, O, X, O, playerVarX, playerVarO, Nothing, Nothing, Nothing]
 
 testMacroboard   = [(microboardOne, Ongoing), (microboardTwo, Ongoing), (microboardThree, Ongoing), 
                    (microboardFour, Ongoing),(microboardFive, Ongoing), (microboardSix, Ongoing), 
