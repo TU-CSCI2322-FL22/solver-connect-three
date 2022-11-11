@@ -1,7 +1,7 @@
 module Main where
 
 data Player = X | O deriving (Show, Eq)
-type Play = (Int, Int)
+type Play = (Int, Int) --First int is tile number of the macroboard, second int is the tile number of the microboard)
 data Victory = Won Player | Tie | Ongoing deriving (Show, Eq)
 type Microboard = [Maybe Player]
 type Microgame = (Microboard, Victory)
@@ -60,39 +60,66 @@ checkMacrowin board = if Ongoing `elem` map snd board then Ongoing else Tie
 --We are going to assume play is legal because we will check if
 --any user-inputted plays are legal in our actual implementation
 
-playToTile :: Play -> Int
-playToTile (0,0) = 0
-playToTile (0,1) = 1
-playToTile (0,2) = 2
-playToTile (1,0) = 3
-playToTile (1,1) = 4
-playToTile (1,2) = 5
-playToTile (2,0) = 6
-playToTile (2,1) = 7
-playToTile (2,2) = 8
+--playToTile :: Play -> Int
+--playToTile (0,0) = 0
+--playToTile (0,1) = 1
+--playToTile (0,2) = 2
+--playToTile (1,0) = 3
+--playToTile (1,1) = 4
+--playToTile (1,2) = 5
+--playToTile (2,0) = 6
+--playToTile (2,1) = 7
+--playToTile (2,2) = 8
 
-makeMicroPlay :: Microgame -> Play -> Player -> Microgame
-makeMicroPlay game play player =
-    let numOfTile   = playToTile play
-        board       = fst game
-        vicState    = snd game
-        newBoard    = [if ((board !! numOfTile) == tl) then Just player else tl | tl <- board]
-        newVicState = checkWin newBoard
-    in (newBoard, newVicState)
+--makeMicroPlay :: Microgame -> Play -> Player -> Microgame
+--makeMicroPlay game play player =
+--    let numOfTile   = playToTile play
+--        board       = fst game
+--        vicState    = snd game
+--        newBoard    = [if ((board !! numOfTile) == tl) then Just player else tl | tl <- board]
+--        newVicState = checkWin newBoard
+--    in (newBoard, newVicState)
 
-makeMacroPlay :: Macrogame -> Player ->  Macrogame
-makeMacroPlay macrogame nextPlayer = 
-    let board = fst macrogame
-    in  ([(b, checkWin b) | (b, v) <- board], nextPlayer)
+--makeMacroPlay :: Macrogame -> Player ->  Macrogame
+--makeMacroPlay macrogame nextPlayer = 
+--    let board = fst macrogame
+--    in  ([(b, checkWin b) | (b, v) <- board], nextPlayer)
+
+
+makePlay :: Play -> Macrogame -> Player -> Macrogame
+makePlay play macgame nextPlayer =
+    let macboard         = fst macgame
+        micTup           = aux1 macboard 0 --aux1 will determine correct microgame from the tile given by fst play
+        micgame          = fst micTup
+        micIdx           = snd micTup
+        micboard         = fst micgame
+        micboardWithPlay = aux2 micboard 0 --aux2 will make a play on the microgame on the tile given by snd play, with the player given by snd macgame
+        newMicgame       = (micboardWithPlay, checkWin micboardWithPlay)
+    in ((aux3 newMicgame 0 micIdx macboard), nextPlayer) --aux3 will add the microgame back to the macrogame
+        where aux1 (m:ms) 9       = error "Invalid play input (> 8) in makePlay"
+              aux1 (m:ms) currIdx =
+                  if (currIdx == (fst play)) then (m, currIdx)
+                  else aux1 ms (currIdx + 1)
+              aux2 (t:ts) 9       = error "Invalid play input (> 8) in makePlay"
+              aux2 (t:ts) currIdx =
+                  if (currIdx == (snd play)) then (Just (snd macgame)):ts
+                  else t:(aux2 ts (currIdx + 1))
+              aux3 newMicgame currIdx idx (m:ms) =
+                  if (idx == currIdx) then newMicgame:ms
+                  else m:(aux3 newMicgame (currIdx + 1) idx ms)
+    
 
 -- Checking if a given tile has been played
-checkPlay :: Play -> Microboard -> Bool
+checkPlay :: Play -> Macroboard -> Bool
 checkPlay play board = 
-    let numOfTile        = playToTile play
-        playWithTileHead = drop (numOfTile) board
-        currentTile      = head playWithTileHead
+    let numMacTile          = fst play
+        numMicTile          = snd play
+        macPlayWithTileHead = drop (numMacTile) board
+        microboard          = fst $ head macPlayWithTileHead
+        micPlayWithTileHead = drop (numMicTile) microboard
+        currentTile         = head micPlayWithTileHead
     in currentTile /= Nothing
---testing to make sure my branch is working
+
 
 -- TO-DO - I feel pretty confident about this
 -- OBJECTIVE: Check if a move is legal
@@ -103,8 +130,8 @@ checkLegal play = play `elem` [(x,y) | x <- [0..8], y <- [0..8]]
 -- OBJECTIVE: Return all legal plays (for a Macrogame?)
 -- (ORIGINAL): legalPlays :: Macrogame -> [Play]
 -- (ORIGINAL): legalPlays macrogame = undefined
-legalPlays :: [Play]
-legalPlays = [(x,y) | x <- [0..8], y <- [0..8]]
+validPlays :: [Play] -> Macrogame -> [Play]
+validPlays play game = [(x,y) | (x, y) <- play, checkPlay (x,y) (fst game)]
 
 -- Show function
 showBoard :: Microboard -> String
