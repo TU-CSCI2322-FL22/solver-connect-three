@@ -1,0 +1,29 @@
+For this milestone, you will solve games by determining the optimal move for a player for a game state. Given a game state, search for a move that can force a win for the current player. Failing that, return a move that can force a tie for the current player. This will involve recursively searching through the game states that result from that move. 
+
+* You must ensure that your game has bounded depth. For games that can cycle, such as checkers and chess, add a turn counter and tie the game when it hits zero.
+
+* I suggest the following:
+
+        * Refactoring an Outcome type that represents a win or tie.
+
+        * Have your "who has won" function return a Maybe Outcome.
+
+        * Write  a function "who will win" that takes a Game and returns an Outcome. 
+Considers every valid move, the resulting game state, and chooses the move with the best outcome for the current player. Think Scavenge!
+
+        * Then write a function "best move" that takes a Game and return the best Move.
+
+Further, you will implement a simple interface. You will need to build three I/O actions: one each to read and write game states from a file, and one that computes and prints the winning move. The input format should describe the board game in progress, and be designed to be simple for your program to read. For instance, each square is a 0 for blank, 1 for player 1, or 2 for player 2. The current turn or other intangible components are given in the first (or last) few lines. I suggest the following functions (or equivalent):
+
+* readGame :: String -> Game
+
+* showGame :: Game -> String
+
+* writeGame :: Game -> FilePath -> IO ()
+
+* loadGame :: FilePath -> IO Game 
+
+* putWinner :: Game -> IO ()
+
+Full Credit: All of these functions should consider possible errors or edge cases. Return a Maybe Move or Maybe Game as appropriate. 
+Early Start: Implement a simple command-line interface. Your input will be a file describing the board game in progress, and the output will be the best move the current player can make. 
