@@ -161,30 +161,31 @@ showPlayer (Just X) = "X"
 showPlayer (Just O) = "O"
 
 showBoard :: Microboard -> (String, String, String)
-showBoard board =
+showBoard [pos0, pos1, pos2, pos3, pos4, pos5, pos6, pos7, pos8] =
     let
-        line1 = showPlayer (board !! 0) ++ "|" ++ showPlayer (board !! 1) ++ "|" ++ showPlayer (board !! 2)
-        line2 = showPlayer (board !! 3) ++ "|" ++ showPlayer (board !! 4) ++ "|" ++ showPlayer (board !! 5)
-        line3 = showPlayer (board !! 6) ++ "|" ++ showPlayer (board !! 7) ++ "|" ++ showPlayer (board !! 8)
+        line1 = showPlayer pos0 ++ "|" ++ showPlayer pos1 ++ "|" ++ showPlayer pos2
+        line2 = showPlayer pos3 ++ "|" ++ showPlayer pos4 ++ "|" ++ showPlayer pos5
+        line3 = showPlayer pos6 ++ "|" ++ showPlayer pos7 ++ "|" ++ showPlayer pos8
     in
         (line1, line2, line3)
+showBoard _ = error "Invalid board in showBoard"
 
 
 --showMacroboard :: Macroboard -> String
 --showMacroboard = [showBoard (fst (board !! i)) | i <- [0..8]]
 showMacroboard :: Macroboard -> String
 
-showMacroboard board = 
+showMacroboard [(game1, _), (game2, _), (game3, _), (game4, _), (game5, _), (game6, _), (game7, _), (game8, _), (game9, _)] = 
     let
-        (board1Line1, board1Line2, board1Line3) = showBoard (fst (board !! 0))
-        (board2Line1, board2Line2, board2Line3) = showBoard (fst (board !! 1))
-        (board3Line1, board3Line2, board3Line3) = showBoard (fst (board !! 2))
-        (board4Line1, board4Line2, board4Line3) = showBoard (fst (board !! 3))
-        (board5Line1, board5Line2, board5Line3) = showBoard (fst (board !! 4))
-        (board6Line1, board6Line2, board6Line3) = showBoard (fst (board !! 5))
-        (board7Line1, board7Line2, board7Line3) = showBoard (fst (board !! 6))
-        (board8Line1, board8Line2, board8Line3) = showBoard (fst (board !! 7))
-        (board9Line1, board9Line2, board9Line3) = showBoard (fst (board !! 8))
+        (board1Line1, board1Line2, board1Line3) = showBoard (game1)
+        (board2Line1, board2Line2, board2Line3) = showBoard (game2)
+        (board3Line1, board3Line2, board3Line3) = showBoard (game3)
+        (board4Line1, board4Line2, board4Line3) = showBoard (game4)
+        (board5Line1, board5Line2, board5Line3) = showBoard (game5)
+        (board6Line1, board6Line2, board6Line3) = showBoard (game6)
+        (board7Line1, board7Line2, board7Line3) = showBoard (game7)
+        (board8Line1, board8Line2, board8Line3) = showBoard (game8)
+        (board9Line1, board9Line2, board9Line3) = showBoard (game9)
         line1 = board1Line1 ++ "||" ++ board2Line1 ++ "||" ++ board3Line1
         line2 = board1Line2 ++ "||" ++ board2Line2 ++ "||" ++ board3Line2
         line3 = board1Line3 ++ "||" ++ board2Line3 ++ "||" ++ board3Line3
@@ -198,8 +199,6 @@ showMacroboard board =
         line11 = board7Line3 ++ "||" ++ board8Line3 ++ "||" ++ board9Line3
     in 
         unlines [line1, line2, line3, line4, line5, line6, line7, line8, line9, line10, line11]
+showMacroboard _ = error "Invalid Macroboard"
 
-main :: IO ()
-main = do
-    undefined
 
