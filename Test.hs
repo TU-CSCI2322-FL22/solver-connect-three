@@ -28,7 +28,7 @@ testMacroboard   = [(microboardOne, Ongoing), (microboardTwo, Ongoing), (microbo
 
 
 --the last thing before String in the type definitions is the expected result of the function
-testCheckWin :: Microboard -> Victory -> String
+{-testCheckWin :: Microboard -> Victory -> String
 testCheckWin micboard vic = 
     if (checkWin micboard /= vic) then "checkWin error"
     else "checkWin test passed"
@@ -58,4 +58,4 @@ testCheckLegal play expectedBool =
     if (checkLegal play) /= expectedBool then "checkLegal error"
     else "checkLegal test passed"
 
-
+-}
