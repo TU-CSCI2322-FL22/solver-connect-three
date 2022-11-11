@@ -4,6 +4,7 @@ data Player = X | O deriving (Show, Eq)
 type Play = (Int, Int) --First int is tile number of the macroboard, second int is the tile number of the microboard)
 data Victory = Won Player | Tie | Ongoing deriving (Show, Eq)
 type Microboard = [Maybe Player]
+-- type Microgame = Ongoing [Maybe Player] | Solved Victory deriving (Show, Eq) -- someday fix?
 type Microgame = (Microboard, Victory)
 type Macroboard = [Microgame]
 type Macrogame = (Macroboard, Player)
