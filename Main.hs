@@ -86,8 +86,8 @@ checkMacrowin board = if Ongoing `elem` map snd board then Ongoing else Tie
 --    in  ([(b, checkWin b) | (b, v) <- board], nextPlayer)
 
 
-makePlay :: Play -> Macrogame -> Player -> Macrogame
-makePlay play macgame nextPlayer =
+makePlay :: Play -> Macrogame -> Macrogame
+makePlay play macgame =
     let macboard         = fst macgame
         micTup           = aux1 macboard 0 --aux1 will determine correct microgame from the tile given by fst play
         micgame          = fst micTup
@@ -95,6 +95,7 @@ makePlay play macgame nextPlayer =
         micboard         = fst micgame
         micboardWithPlay = aux2 micboard 0 --aux2 will make a play on the microgame on the tile given by snd play, with the player given by snd macgame
         newMicgame       = (micboardWithPlay, checkWin micboardWithPlay)
+        nextPlayer       = if (snd macgame == X) then O else X
     in ((aux3 newMicgame 0 micIdx macboard), nextPlayer) --aux3 will add the microgame back to the macrogame
         where aux1 (m:ms) 9       = error "Invalid play input (> 8) in makePlay"
               aux1 (m:ms) currIdx =
