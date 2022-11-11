@@ -136,24 +136,70 @@ validPlays :: [Play] -> Macrogame -> [Play]
 validPlays play game = [(x,y) | (x, y) <- play, checkPlay (x,y) (fst game)]
 
 -- Show function
-showBoard :: Microboard -> String
-showBoard board = [
-    if (i > 5 && i < 11) then head "_"
-    else if (i > 17 && i < 23) then head "_"
-    else if (i `mod` 6) == 0 then head "\n"
-    else if (i+1 `mod` 2) == 0 then head "|"
-    else if (i `mod` 2) == 0 && (i < 5) then head (show (board !! (i `div` 2)))
-    else if (i `mod` 2) == 0 && (i <17) then head (show (board !! (i-6 `div` 2)))
-    else if (i `mod` 2) == 0 && (i <29) then head (show (board !! ((i-12 `div` 2))))
-    else ' '  
-    | i <- [0..29]]
+
+-- X| |X|O|X|O|X| |O
+-- -----|-----|-----
+-- O|X| |X| |O|X|O|X
+-- -----|-----|-----
+-- X|O|X|X| |X|O|X|O
+-- -----|-----|-----
+-- X| |X|O|X|O|X| |O
+-- -----|-----|-----
+-- O|X|O| |X|O|X|O|X
+-- -----|-----|-----
+-- X| |X|X|O|X|O| |O
+-- -----|-----|-----
+-- X|O|X|O| |O| |X|O
+-- -----|-----|-----
+-- O|X|O|X|X|O|X| |X
+-- -----|-----|-----
+-- X| |X|X|O| |O|X|O
+
+showPlayer :: Maybe Player -> String
+showPlayer Nothing = " "
+showPlayer (Just X) = "X"
+showPlayer (Just O) = "O"
+
+showBoard :: Microboard -> (String, String, String)
+showBoard board =
+    let
+        line1 = showPlayer (board !! 0) ++ "|" ++ showPlayer (board !! 1) ++ "|" ++ showPlayer (board !! 2)
+        line2 = showPlayer (board !! 3) ++ "|" ++ showPlayer (board !! 4) ++ "|" ++ showPlayer (board !! 5)
+        line3 = showPlayer (board !! 6) ++ "|" ++ showPlayer (board !! 7) ++ "|" ++ showPlayer (board !! 8)
+    in
+        (line1, line2, line3)
 
 
 --showMacroboard :: Macroboard -> String
 --showMacroboard = [showBoard (fst (board !! i)) | i <- [0..8]]
 showMacroboard :: Macroboard -> String
-showMacroboard board = concat [showBoard (fst (board !! i)) ++ "\n \n \n"  | i <- [0..8]]
+
+showMacroboard board = 
+    let
+        (board1Line1, board1Line2, board1Line3) = showBoard (fst (board !! 0))
+        (board2Line1, board2Line2, board2Line3) = showBoard (fst (board !! 1))
+        (board3Line1, board3Line2, board3Line3) = showBoard (fst (board !! 2))
+        (board4Line1, board4Line2, board4Line3) = showBoard (fst (board !! 3))
+        (board5Line1, board5Line2, board5Line3) = showBoard (fst (board !! 4))
+        (board6Line1, board6Line2, board6Line3) = showBoard (fst (board !! 5))
+        (board7Line1, board7Line2, board7Line3) = showBoard (fst (board !! 6))
+        (board8Line1, board8Line2, board8Line3) = showBoard (fst (board !! 7))
+        (board9Line1, board9Line2, board9Line3) = showBoard (fst (board !! 8))
+        line1 = board1Line1 ++ "||" ++ board2Line1 ++ "||" ++ board3Line1
+        line2 = board1Line2 ++ "||" ++ board2Line2 ++ "||" ++ board3Line2
+        line3 = board1Line3 ++ "||" ++ board2Line3 ++ "||" ++ board3Line3
+        line4 = "-----||-----||-----"
+        line5 = board4Line1 ++ "||" ++ board5Line1 ++ "||" ++ board6Line1
+        line6 = board4Line2 ++ "||" ++ board5Line2 ++ "||" ++ board6Line2
+        line7 = board4Line3 ++ "||" ++ board5Line3 ++ "||" ++ board6Line3
+        line8 = "-----||-----||-----"
+        line9 = board7Line1 ++ "||" ++ board8Line1 ++ "||" ++ board9Line1
+        line10 = board7Line2 ++ "||" ++ board8Line2 ++ "||" ++ board9Line2
+        line11 = board7Line3 ++ "||" ++ board8Line3 ++ "||" ++ board9Line3
+    in 
+        unlines [line1, line2, line3, line4, line5, line6, line7, line8, line9, line10, line11]
 
 main :: IO ()
 main = do
     undefined
+
