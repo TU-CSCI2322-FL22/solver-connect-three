@@ -1,3 +1,5 @@
+-- WE'RE STILL WORKING ON SOLVER - THIS DOES NOT WORK YET
+
 module Solver where
 import Game
 
