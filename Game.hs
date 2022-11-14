@@ -1,4 +1,5 @@
 module Game where
+import Data.Maybe
 
 data Player = X | O deriving (Show, Eq)
 type Play = (Int, Int) --First int is tile number of the macroboard, second int is the tile number of the microboard)
