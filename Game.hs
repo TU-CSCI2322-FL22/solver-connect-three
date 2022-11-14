@@ -19,42 +19,24 @@ type Macrogame = (Macroboard, Player)
 
 -- Checking every move if the individual game has been won - if so, then place a move on the big board
 checkWin :: Microboard -> Victory
-checkWin [Just X, Just X, Just X, _, _, _, _, _, _] = Won X
-checkWin [_, _, _, Just X, Just X, Just X, _, _, _] = Won X
-checkWin [_, _, _, _, _, _, Just X, Just X, Just X] = Won X
-checkWin [Just X, _, _, Just X, _, _, Just X, _, _] = Won X
-checkWin [_, Just X, _, _, Just X, _, _, Just X, _] = Won X
-checkWin [_, _, Just X, _, _, Just X, _, _, Just X] = Won X
-checkWin [Just X, _, _, _, Just X, _, _, _, Just X] = Won X
-checkWin [_, _, Just X, _, Just X, _, Just X, _, _] = Won X
-checkWin [Just O, Just O, Just O, _, _, _, _, _, _] = Won O
-checkWin [_, _, _, Just O, Just O, Just O, _, _, _] = Won O
-checkWin [_, _, _, _, _, _, Just O, Just O, Just O] = Won O
-checkWin [Just O, _, _, Just O, _, _, Just O, _, _] = Won O
-checkWin [_, Just O, _, _, Just O, _, _, Just O, _] = Won O
-checkWin [_, _, Just O, _, _, Just O, _, _, Just O] = Won O
-checkWin [Just O, _, _, _, Just O, _, _, _, Just O] = Won O
-checkWin [_, _, Just O, _, Just O, _, Just O, _, _] = Won O
-checkWin board = if Nothing `elem` board then Ongoing else Tie
+checkWin [zero, one, two, three, four, five, six, seven, eight] =
+    if (zero == one && one == two && zero /= Nothing) then Won (fromJust zero)
+    else if (three == four && four == five && three /= Nothing) then Won (fromJust three)
+    else if (six == seven && seven == eight && six /= Nothing) then Won (fromJust six)
+    else if (zero == three && three == six && zero /= Nothing) then Won (fromJust zero)
+    else if (one == four && four == seven && one /= Nothing) then Won (fromJust one)
+    else if (two == five && five == eight && two /= Nothing) then Won (fromJust two)
+    else if (zero == four && four == eight && zero /= Nothing) then Won (fromJust zero)
+    else if (two == four && four == six && two /= Nothing) then Won (fromJust two)
+    else if (zero /= Nothing && one /= Nothing && two /= Nothing && three /= Nothing && four /= Nothing && five /= Nothing && six /= Nothing && seven /= Nothing && eight /= Nothing) then Tie
+    else Ongoing
+
+macroboardToMicroboard :: Macroboard -> Microboard
+macroboardToMicroboard [] = []
+macroboardToMicroboard ((microboard, victory):xs) = [if victory == Won X then Just X else if victory == Won O then Just O else Nothing] ++ macroboardToMicroboard xs
 
 checkMacrowin :: Macroboard -> Victory
-checkMacrowin [(_, Won X), (_, Won X), (_, Won X), _, _, _, _, _, _] = Won X
-checkMacrowin [_, _, _, (_, Won X), (_, Won X), (_, Won X), _, _, _] = Won X
-checkMacrowin [_, _, _, _, _, _, (_, Won X), (_, Won X), (_, Won X)] = Won X
-checkMacrowin [(_, Won X), _, _, (_, Won X), _, _, (_, Won X), _, _] = Won X
-checkMacrowin [_, (_, Won X), _, _, (_, Won X), _, _, (_, Won X), _] = Won X
-checkMacrowin [_, _, (_, Won X), _, _, (_, Won X), _, _, (_, Won X)] = Won X
-checkMacrowin [(_, Won X), _, _, _, (_, Won X), _, _, _, (_, Won X)] = Won X
-checkMacrowin [_, _, (_, Won X), _, (_, Won X), _, (_, Won X), _, _] = Won X
-checkMacrowin [(_, Won O), (_, Won O), (_, Won O), _, _, _, _, _, _] = Won O
-checkMacrowin [_, _, _, (_, Won O), (_, Won O), (_, Won O), _, _, _] = Won O
-checkMacrowin [_, _, _, _, _, _, (_, Won O), (_, Won O), (_, Won O)] = Won O
-checkMacrowin [(_, Won O), _, _, (_, Won O), _, _, (_, Won O), _, _] = Won O
-checkMacrowin [_, (_, Won O), _, _, (_, Won O), _, _, (_, Won O), _] = Won O
-checkMacrowin [_, _, (_, Won O), _, _, (_, Won O), _, _, (_, Won O)] = Won O
-checkMacrowin [(_, Won O), _, _, _, (_, Won O), _, _, _, (_, Won O)] = Won O
-checkMacrowin [_, _, (_, Won O), _, (_, Won O), _, (_, Won O), _, _] = Won O
-checkMacrowin board = if Ongoing `elem` map snd board then Ongoing else Tie
+checkMacrowin macroboard = checkWin (macroboardToMicroboard macroboard)
 
 -- Making a play on a specific tile of a specific board
 
