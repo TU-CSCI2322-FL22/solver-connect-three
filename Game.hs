@@ -1,4 +1,4 @@
-module Main where
+module Game where
 
 data Player = X | O deriving (Show, Eq)
 type Play = (Int, Int) --First int is tile number of the macroboard, second int is the tile number of the microboard)
