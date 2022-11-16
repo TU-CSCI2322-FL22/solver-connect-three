@@ -11,7 +11,7 @@ predictWin macgame = undefined
 -- secondary: moves that block other play from winning on their next turn
 winningMoves :: [Play] -> Macrogame -> [(Play, Player)]
 -- need to fix left side of pipe??
-winningMoves validPlays macgame = [(play, snd macgame) | play <- validPlays, checkMacrowin fst (makePlay play macgame) /= Ongoing]
+winningMoves validPlays macgame = [(play, snd macgame) | play <- validPlays, checkMacrowin (fst $ makePlay play macgame) /= Ongoing]
 
 bestMove :: Macrogame -> Play
 bestMove = undefined
