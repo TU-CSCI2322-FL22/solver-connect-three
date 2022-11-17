@@ -3,10 +3,10 @@ import Data.Maybe
 
 data Player = X | O deriving (Show, Eq)
 type Play = (Int, Int) --First int is tile number of the macroboard, second int is the tile number of the microboard)
-data Victory = Won Player | Tie | Ongoing deriving (Show, Eq)
+data Victory = Won Player | Tie deriving (Show, Eq)
 type Microboard = [Maybe Player]
 -- type Microgame = Ongoing [Maybe Player] | Solved Victory deriving (Show, Eq) -- someday fix?
-type Microgame = (Microboard, Victory)
+type Microgame = (Microboard, Maybe Victory)
 type Macroboard = [Microgame]
 type Macrogame = (Macroboard, Player)
 
@@ -19,24 +19,24 @@ type Macrogame = (Macroboard, Player)
 -- 6  |  7  |  8
 
 -- Checking every move if the individual game has been won - if so, then place a move on the big board
-checkWin :: Microboard -> Victory
+checkWin :: Microboard -> Maybe Victory
 checkWin [zero, one, two, three, four, five, six, seven, eight] =
-    if (zero == one && one == two && zero /= Nothing) then Won (fromJust zero)
-    else if (three == four && four == five && three /= Nothing) then Won (fromJust three)
-    else if (six == seven && seven == eight && six /= Nothing) then Won (fromJust six)
-    else if (zero == three && three == six && zero /= Nothing) then Won (fromJust zero)
-    else if (one == four && four == seven && one /= Nothing) then Won (fromJust one)
-    else if (two == five && five == eight && two /= Nothing) then Won (fromJust two)
-    else if (zero == four && four == eight && zero /= Nothing) then Won (fromJust zero)
-    else if (two == four && four == six && two /= Nothing) then Won (fromJust two)
-    else if (zero /= Nothing && one /= Nothing && two /= Nothing && three /= Nothing && four /= Nothing && five /= Nothing && six /= Nothing && seven /= Nothing && eight /= Nothing) then Tie
-    else Ongoing
+    if (zero == one && one == two && zero /= Nothing) then Just $ Won (fromJust zero)
+    else if (three == four && four == five && three /= Nothing) then Just $ Won (fromJust three)
+    else if (six == seven && seven == eight && six /= Nothing) then Just $ Won (fromJust six)
+    else if (zero == three && three == six && zero /= Nothing) then Just $ Won (fromJust zero)
+    else if (one == four && four == seven && one /= Nothing) then Just $ Won (fromJust one)
+    else if (two == five && five == eight && two /= Nothing) then Just $ Won (fromJust two)
+    else if (zero == four && four == eight && zero /= Nothing) then Just $ Won (fromJust zero)
+    else if (two == four && four == six && two /= Nothing) then Just $  Won (fromJust two)
+    else if (zero /= Nothing && one /= Nothing && two /= Nothing && three /= Nothing && four /= Nothing && five /= Nothing && six /= Nothing && seven /= Nothing && eight /= Nothing) then Just Tie
+    else Nothing
 
 macroboardToMicroboard :: Macroboard -> Microboard
 macroboardToMicroboard [] = []
-macroboardToMicroboard ((microboard, victory):xs) = [if victory == Won X then Just X else if victory == Won O then Just O else Nothing] ++ macroboardToMicroboard xs
+macroboardToMicroboard ((microboard, victory):xs) = [if victory == Just (Won X) then Just X else if victory == Just (Won O) then Just O else Nothing] ++ macroboardToMicroboard xs
 
-checkMacrowin :: Macroboard -> Victory
+checkMacrowin :: Macroboard -> Maybe Victory
 checkMacrowin macroboard = checkWin (macroboardToMicroboard macroboard)
 
 -- Making a play on a specific tile of a specific board
@@ -103,7 +103,7 @@ checkPlay play board =
         microboard          = fst $ head macPlayWithTileHead
         micPlayWithTileHead = drop (numMicTile) microboard
         currentTile         = head micPlayWithTileHead
-    in currentTile /= Nothing
+    in currentTile == Nothing
 
 
 -- TO-DO - I feel pretty confident about this
@@ -115,8 +115,8 @@ checkLegal play = play `elem` [(x,y) | x <- [0..8], y <- [0..8]]
 -- OBJECTIVE: Return all legal plays (for a Macrogame?)
 -- (ORIGINAL): legalPlays :: Macrogame -> [Play]
 -- (ORIGINAL): legalPlays macrogame = undefined
-validPlays :: [Play] -> Macrogame -> [Play]
-validPlays play game = [(x,y) | (x, y) <- play, checkPlay (x,y) (fst game)]
+validPlays :: Macrogame -> [Play]
+validPlays game = [(x,y) | x <- [0..8], y <- [0..8], checkPlay (x,y) (fst game)]
 
 -- Show function
 

@@ -12,12 +12,12 @@ predictWin macgame = undefined
 -- secondary: moves that block other play from winning on their next turn
 -- 
 -- change type signature to exclude [Play] at some point? leave Macrogame -> ...
-winningMoves :: [Play] -> Macrogame -> [(Play, Player)]
+winningOrTyingMoves :: Macrogame -> [(Play, Player)]
 -- need to fix left side of pipe??
 --
 -- should we split winningMoves into winningMoves & tyingMoves??
 -- winningMoves                                                                                                          == Won Player
-winningMoves validPlays macgame = [(play, snd macgame) | play <- validPlays, checkMacrowin (fst $ makePlay play macgame) /= Ongoing]
+winningOrTyingMoves macgame = [(play, snd macgame) | play <- (validPlays macgame), checkMacrowin (fst $ makePlay play macgame) /= Nothing]
 
 -- tyingMoves
 -- "                                                                                                              "-ish == Tie

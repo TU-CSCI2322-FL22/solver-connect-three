@@ -1,5 +1,5 @@
 module TestCases where
-import Main
+import Game
 
 --Testing data constructors
 playerVarX = X
@@ -22,9 +22,9 @@ microboardNine   = take 9 (repeat Nothing)
 -- ERROR: haskell doesn't like the Nothings in microboardTen
 -- microboardTen = [X, O, X, O, playerVarX, playerVarO, Nothing, Nothing, Nothing]
 
-testMacroboard   = [(microboardOne, Ongoing), (microboardTwo, Ongoing), (microboardThree, Ongoing), 
-                   (microboardFour, Ongoing),(microboardFive, Ongoing), (microboardSix, Ongoing), 
-                   (microboardSeven, Ongoing), (microboardEight, Ongoing), (microboardNine, Ongoing)]
+testMacroboard   = [(microboardOne, Nothing), (microboardTwo, Nothing), (microboardThree, Nothing), 
+                   (microboardFour, Nothing),(microboardFive, Nothing), (microboardSix, Nothing), 
+                   (microboardSeven, Nothing), (microboardEight, Nothing), (microboardNine, Nothing)]
 
 
 --the last thing before String in the type definitions is the expected result of the function
