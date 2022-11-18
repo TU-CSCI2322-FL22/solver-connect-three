@@ -3,7 +3,18 @@ import Game
 
 predictWin :: Macrogame -> Victory
 -- call winningMoves on macgame
-predictWin macgame = undefined
+predictWin macgame =
+    undefined
+--let winMoves = winningMoves macgame
+--        --tieMoves = tyingMoves macgame
+--    in if (winMoves /= []) then Won (snd macgame)
+--       else aux (validPlays macgame) macgame
+--                where aux [] game = 
+--                      aux (m:ms) game =
+--                          let gameAfterPlay = makePlay m macgame
+--                          in 
+--                              if (winningMoves gameAfterPlay) /= [] then aux ms game
+--                              else aux (validPlays gameAfterPlay) gameAfterPlay
 
 -- taking in Macrogame to determine winning moves for current Player in (Macroboard, Player) tuple
 -- "chooses the move with the best outcome for the current player"
@@ -12,12 +23,15 @@ predictWin macgame = undefined
 -- secondary: moves that block other play from winning on their next turn
 -- 
 -- change type signature to exclude [Play] at some point? leave Macrogame -> ...
-winningOrTyingMoves :: Macrogame -> [(Play, Player)]
--- need to fix left side of pipe??
---
--- should we split winningMoves into winningMoves & tyingMoves??
--- winningMoves                                                                                                          == Won Player
-winningOrTyingMoves macgame = [(play, snd macgame) | play <- (validPlays macgame), checkMacrowin (fst $ makePlay play macgame) /= Nothing]
+winningMoves :: Macrogame -> [Play] --Checking for microboard tiles that result in a macroboard win (and tyingMoves checks for microboard tiles that result in a macroboard tie)
+winningMoves macgame = [ play | play <- (validPlays macgame), checkMacrowin (fst $ makePlay play macgame) == Just (Won (snd macgame))]
+
+
+--winningOMoves :: Macrogame -> Play
+--winningOMoves macgame = [ play | play <- (validPlays macgame), checkMacrowin (fst $ makePlay play macgame) == Won O]
+
+tyingMoves :: Macrogame -> [Play]
+tyingMoves macgame = [ play | play <- (validPlays macgame), checkMacrowin (fst $ makePlay play macgame) == Just Tie]
 
 -- tyingMoves
 -- "                                                                                                              "-ish == Tie

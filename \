@@ -20,7 +20,7 @@ microboardEight  = take 9 (repeat Nothing)
 microboardNine   = take 9 (repeat Nothing)
 microboardTen    = take 3 (repeat (Just X)) ++ take 6 (repeat Nothing)
 microboardEleven = take 3 (repeat (Just X)) ++ take 6 (repeat Nothing)
-microboardTwelve = take 2 (repeat (Just X)) ++ take 5 (repeat Nothing) ++ take 2 (repeat (Just X))
+microboardTwelve = take 3 (repeat (Just X)) ++ take 6 (repeat Nothing)
 
 -- Other/Optional Test Boards
 -- ERROR: haskell doesn't like the Nothings in microboardTen
@@ -30,14 +30,13 @@ testMacroboard   = [(microboardOne, Nothing), (microboardTwo, Nothing), (microbo
                    (microboardFour, Nothing),(microboardFive, Nothing), (microboardSix, Nothing), 
                    (microboardSeven, Nothing), (microboardEight, Nothing), (microboardNine, Nothing)]
 
-testMacroboard2  = [(microboardTen, Just (Won X)), (microboardEleven, Just (Won X)), (microboardTwelve, Nothing),
+testMacroboard2  = [(microboardOne, Just X), (microboardTwo, Just X), (microboardThree, Just X),
                    (microboardFour, Nothing),(microboardFive, Nothing), (microboardSix, Nothing),
                    (microboardSeven, Nothing), (microboardEight, Nothing), (microboardNine, Nothing)]
 
 
 testMacrogame = (testMacroboard, X)
 
-testMacrogame2 = (testMacroboard2, X)
 
 
 --the last thing before String in the type definitions is the expected result of the function
