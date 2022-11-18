@@ -5,6 +5,7 @@ import Control.Monad
 import System.IO
 import System.Environment
 import Data.Char
+import Control.Exception
 
 predictWin :: Macrogame -> Victory
 predictWin macgame =
@@ -93,8 +94,18 @@ writeGame macgame flpath =
 
 -- TO-DO
 loadGame :: FilePath -> IO Macrogame
-loadGame fipath = undefined
+loadGame flpath = do
+    str <- readFile flpath 
+    evaluate $ readGame str --wtf
+
+--     str <- readFile flpath
+--     retgame <- readGame str
+--     retgame
 
 -- TO-DO
 putWinner :: Macrogame -> IO ()
-putWinner macgame = undefined
+putWinner macgame = do
+    let play = bestPlay macgame
+    putStrLn $ "(" ++ show (fst play) ++ "," ++ show (snd play) ++ ")"
+
+--comfort line
