@@ -28,7 +28,7 @@ checkWin [zero, one, two, three, four, five, six, seven, eight] =
     else if (one == four && four == seven && one /= Nothing) then Just $ Won (fromJust one)
     else if (two == five && five == eight && two /= Nothing) then Just $ Won (fromJust two)
     else if (zero == four && four == eight && zero /= Nothing) then Just $ Won (fromJust zero)
-    else if (two == four && four == six && two /= Nothing) then Just $  Won (fromJust two)
+    else if (two == four && four == six && two /= Nothing) then Just $ Won (fromJust two)
     else if (zero /= Nothing && one /= Nothing && two /= Nothing && three /= Nothing && four /= Nothing && five /= Nothing && six /= Nothing && seven /= Nothing && eight /= Nothing) then Just Tie
     else Nothing
 
