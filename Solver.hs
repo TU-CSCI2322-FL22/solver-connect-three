@@ -68,7 +68,7 @@ bestPlay macgame =
                       aux (p:ps) best =
                           let gameAfterPlay = makePlay p macgame
                           in if (winningMoves gameAfterPlay) /= [] then aux ps best
-                             else if (tyingMoves gameAfterPlay) /= [] then best
+                             else if (tyingMoves gameAfterPlay) /= [] then p
                           else aux ps p
 
 readGame :: String -> Macrogame
