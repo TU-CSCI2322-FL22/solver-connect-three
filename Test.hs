@@ -1,5 +1,6 @@
 module TestCases where
-import Main
+import Game
+import Solver
 
 --Testing data constructors
 playerVarX = X
@@ -17,14 +18,26 @@ microboardSix    = take 9 (repeat Nothing)
 microboardSeven  = take 9 (repeat Nothing)
 microboardEight  = take 9 (repeat Nothing)
 microboardNine   = take 9 (repeat Nothing)
+microboardTen    = take 3 (repeat (Just X)) ++ take 6 (repeat Nothing)
+microboardEleven = take 3 (repeat (Just X)) ++ take 6 (repeat Nothing)
+microboardTwelve = take 2 (repeat (Just X)) ++ take 5 (repeat Nothing) ++ take 2 (repeat (Just X))
 
 -- Other/Optional Test Boards
 -- ERROR: haskell doesn't like the Nothings in microboardTen
 -- microboardTen = [X, O, X, O, playerVarX, playerVarO, Nothing, Nothing, Nothing]
 
-testMacroboard   = [(microboardOne, Ongoing), (microboardTwo, Ongoing), (microboardThree, Ongoing), 
-                   (microboardFour, Ongoing),(microboardFive, Ongoing), (microboardSix, Ongoing), 
-                   (microboardSeven, Ongoing), (microboardEight, Ongoing), (microboardNine, Ongoing)]
+testMacroboard   = [(microboardOne, Nothing), (microboardTwo, Nothing), (microboardThree, Nothing), 
+                   (microboardFour, Nothing),(microboardFive, Nothing), (microboardSix, Nothing), 
+                   (microboardSeven, Nothing), (microboardEight, Nothing), (microboardNine, Nothing)]
+
+testMacroboard2  = [(microboardTen, Just (Won X)), (microboardEleven, Just (Won X)), (microboardTwelve, Nothing),
+                   (microboardFour, Nothing),(microboardFive, Nothing), (microboardSix, Nothing),
+                   (microboardSeven, Nothing), (microboardEight, Nothing), (microboardNine, Nothing)]
+
+
+testMacrogame = (testMacroboard, X)
+
+testMacrogame2 = (testMacroboard2, X)
 
 
 --the last thing before String in the type definitions is the expected result of the function
