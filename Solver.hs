@@ -1,5 +1,6 @@
 module Solver where
 import Game
+-- I love importing things
 import Control.Monad
 import System.IO
 import System.Environment
@@ -76,17 +77,22 @@ bestPlay macgame =
                              else if (tyingMoves gameAfterPlay) /= [] then p
                           else aux ps p
 
+-- Joey
 readGame :: String -> Macrogame
 readGame str = undefined
 
+-- Joey
 showGame :: Macrogame -> String
-showGame macgame = undefined
+showGame macgame = "Hello WOOOOOORLD"
 
+-- TO-DO
+-- writes output of showGame to a file
 writeGame :: Macrogame -> FilePath -> IO ()
 writeGame macgame flpath = 
         let str = showGame macgame
         in writeFile flpath str
 
+-- TO-DO
 loadGame :: FilePath -> IO Macrogame
 loadGame flpath = do
     str <- readFile flpath 
@@ -96,6 +102,7 @@ loadGame flpath = do
 --     retgame <- readGame str
 --     retgame
 
+-- TO-DO
 putWinner :: Macrogame -> IO ()
 putWinner macgame = do
     let play = bestPlay macgame
