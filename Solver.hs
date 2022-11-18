@@ -2,9 +2,29 @@ module Solver where
 import Game
 
 predictWin :: Macrogame -> Victory
--- call winningMoves on macgame
 predictWin macgame =
-    undefined
+    let play          = bestPlay macgame
+        gameAfterPlay = makePlay play macgame
+    in if (checkMacrowin (fst gameAfterPlay)) == Just (Won X) then Won X --fromJust wasn't working lol
+       else if (checkMacrowin (fst gameAfterPlay)) == Just (Won O) then Won O
+       else if (checkMacrowin (fst gameAfterPlay)) == Just Tie then Tie
+       else predictWin gameAfterPlay
+           
+
+
+
+
+--    let valPlays = validPlays macgame
+--    in if (winningMoves macgame) /= [] then Won (snd macgame)
+--       else aux valPlays macgame
+--                where aux [] game = if (snd game == X) then Won O else Won X
+--                      aux (p:ps) game =
+--                          let gameAfterPlay = makePlay p game
+--                          in if (checkMacrowin gameAfterPlay == Just (Won (snd game))) then Won (snd game)
+--                             else if (winningMoves gameAfterPlay) /= [] then aux ps
+--                                  else undefined
+                                          
+
 --let winMoves = winningMoves macgame
 --        --tieMoves = tyingMoves macgame
 --    in if (winMoves /= []) then Won (snd macgame)
@@ -38,8 +58,18 @@ tyingMoves macgame = [ play | play <- (validPlays macgame), checkMacrowin (fst $
 
 -- These type signatures on Dr. Fogarty's website have "Game" instead of "Macrogame" - be cautious - we might have to write these for microgames too??
 
-bestMove :: Macrogame -> Play
-bestMove macgame = undefined
+bestPlay :: Macrogame -> Play
+bestPlay macgame =
+    let winMoves = winningMoves macgame 
+        valPlays = validPlays macgame
+    in if (winMoves /= []) then head winMoves
+       else aux valPlays (head valPlays)
+                where aux [] best = best
+                      aux (p:ps) best =
+                          let gameAfterPlay = makePlay p macgame
+                          in if (winningMoves gameAfterPlay) /= [] then aux ps best
+                             else if (tyingMoves gameAfterPlay) /= [] then best
+                          else aux ps p
 
 readGame :: String -> Macrogame
 readGame str = undefined
