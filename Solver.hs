@@ -112,7 +112,7 @@ showGame macgame =
         board7 = [if cell == Just X then "X" else if cell == Just O then "O" else "E" | cell <- fst b7]
         board8 = [if cell == Just X then "X" else if cell == Just O then "O" else "E" | cell <- fst b8]
     in
-        unlines [currentPlayer, concat board0, concat board1, concat board2, concat board3, concat board4, concat board5, concat board6, concat board7, concat board8] 
+        unlines [currentPlayer, concat board0, concat board1, concat board2, concat board3, concat board4, concat board5, concat board6, concat board7, concat board8]
 
 -- TO-DO
 -- writes output of showGame to a file
@@ -138,3 +138,4 @@ putWinner macgame = do
     putStrLn $ "(" ++ show (fst play) ++ "," ++ show (snd play) ++ ")"
 
 --comfort line
+--comfort line 2
