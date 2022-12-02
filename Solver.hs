@@ -1,5 +1,8 @@
 -- evaluation stuff: difference between how many moves away X and O are from winning in a microgame
---                   average between microgame evaluations for macrogame
+--                   ~~average~~ (weighted?) SUM between microgame evaluations for macrogame
+--                   # of outs, or possible wins - look for three non-O's in a row - open spaces are a possible win for X
+--                   subtract possible wins from both sides
+--                   should look "very very similar" to checkWinner code
 
 module Solver where
 import Game
@@ -89,9 +92,6 @@ winningMoves macgame = [ play | play <- (validPlays macgame), checkMacrowin (fst
 tyingMoves :: Macrogame -> [Play]
 tyingMoves macgame = [ play | play <- (validPlays macgame), checkMacrowin (fst $ makePlay play macgame) == Just Tie]
 
--- tyingMoves
--- "                                                                                                              "-ish == Tie
-
 -- These type signatures on Dr. Fogarty's website have "Game" instead of "Macrogame" - be cautious - we might have to write these for microgames too??
 
 bestPlay :: Macrogame -> Play
@@ -143,7 +143,7 @@ showGame macgame =
         board7 = [if cell == Just X then "X" else if cell == Just O then "O" else "E" | cell <- fst b7]
         board8 = [if cell == Just X then "X" else if cell == Just O then "O" else "E" | cell <- fst b8]
     in
-        unlines [currentPlayer, concat board0, concat board1, concat board2, concat board3, concat board4, concat board5, concat board6, concat board7, concat board8]
+        unlines [currentPlayer, concat board0, concat board1, concat board2, concat board3, concat board4, concat board5, concat board6, concat board7, concat board8] 
 
 -- TO-DO
 -- writes output of showGame to a file
