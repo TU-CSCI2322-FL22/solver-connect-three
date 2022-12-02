@@ -34,10 +34,15 @@ testMacroboard2  = [(microboardTen, Just (Won X)), (microboardEleven, Just (Won 
                    (microboardFour, Nothing),(microboardFive, Nothing), (microboardSix, Nothing),
                    (microboardSeven, Nothing), (microboardEight, Nothing), (microboardNine, Nothing)]
 
+testMacroboard3  = [(microboardTen, Just (Won X)), (microboardTwelve, Nothing), (microboardTwelve, Nothing),
+                   (microboardFour, Nothing),(microboardFive, Nothing), (microboardSix, Nothing),
+                   (microboardSeven, Nothing), (microboardEight, Nothing), (microboardNine, Nothing)]
 
 testMacrogame = (testMacroboard, X)
 
 testMacrogame2 = (testMacroboard2, X)
+
+testMacrogame3 = (testMacroboard3, X)
 
 
 --the last thing before String in the type definitions is the expected result of the function
