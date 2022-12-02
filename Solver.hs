@@ -6,19 +6,50 @@ import Game
 -- I love importing things
 import Data.List.Split
 import Control.Monad
+import Debug.Trace
 import System.IO
 import System.Environment
 import Data.Char
 import Control.Exception
 
+
 predictWin :: Macrogame -> Victory
-predictWin macgame =
-    let play          = bestPlay macgame
-        gameAfterPlay = makePlay play macgame
-    in if (checkMacrowin (fst gameAfterPlay)) == Just (Won X) then Won X --fromJust wasn't working lol
-       else if (checkMacrowin (fst gameAfterPlay)) == Just (Won O) then Won O
-       else if (checkMacrowin (fst gameAfterPlay)) == Just Tie then Tie
-       else predictWin gameAfterPlay
+predictWin macgame@(macroboard, player) =
+    case checkMacrowin macroboard of 
+        Just outcome -> outcome
+        Nothing -> let valPlays = validPlays macgame
+                       childStates = [makePlay play macgame | play <- valPlays]
+                       listOfFutures = [predictWin state | state <- childStates]
+                   in bestVicFor player listOfFutures
+    where bestVicFor player listOfFutures = 
+               if (Won player) `elem` listOfFutures then Won (snd macgame)
+               else if (Tie `elem` listOfFutures) then Tie
+               else if null listOfFutures then traceShow macgame $ error "AAAH" 
+                        else head listOfFutures
+--if ((snd macgame) == X) then Won O else Won X
+
+{-
+                  in if (decentPlays == []) then
+                         if (snd macgame == X) then Won O else Won X
+                     else --everything above this line is determining if there is an easy prediction for the game
+                         let decentGames   = [makePlay play macgame | play <- decentPlays]
+                             predictedWins = [predictWin game | game <- decentGames] --this line definitely sucks and doesn't work
+                             winsX         = [vic | vic <- predictedWins, vic == Won X]
+                             winsO         = [vic | vic <- predictedWins, vic == Won O]
+                         in 
+                            if (length winsX > length winsO) then Won X
+                            else if (length winsO > length winsX) then Won O
+                            else Tie
+                               
+-}                         
+
+--predictWin macgame =
+--    let play          = bestPlay macgame
+--        gameAfterPlay = makePlay play macgame
+--    in if (checkMacrowin (fst gameAfterPlay)) == Just (Won X) then Won X --fromJust wasn't working lol
+--       else if (checkMacrowin (fst gameAfterPlay)) == Just (Won O) then Won O
+--       else if (checkMacrowin (fst gameAfterPlay)) == Just Tie then Tie
+--       else predictWin gameAfterPlay
 
 --    let valPlays = validPlays macgame
 --    in if (winningMoves macgame) /= [] then Won (snd macgame)

@@ -34,11 +34,15 @@ checkWin [zero, one, two, three, four, five, six, seven, eight] =
 
 macroboardToMicroboard :: Macroboard -> Microboard
 macroboardToMicroboard [] = []
-macroboardToMicroboard ((microboard, victory):xs) = [if victory == Just (Won X) then Just X else if victory == Just (Won O) then Just O else Nothing] ++ macroboardToMicroboard xs
+macroboardToMicroboard ((microboard, victory):xs) = [if victory == Just (Won X) then Just X
+                                                    else if victory == Just (Won O) then Just O
+                                                    else Nothing] ++ macroboardToMicroboard xs
 
 checkMacrowin :: Macroboard -> Maybe Victory
-checkMacrowin macroboard = checkWin (macroboardToMicroboard macroboard)
-
+checkMacrowin macroboard = 
+     let win = checkWin (macroboardToMicroboard macroboard)
+         valPlays = validPlays (macroboard, X)
+     in if valPlays == [] then Just Tie else win
 -- Making a play on a specific tile of a specific board
 
 --We are going to assume play is legal because we will check if
