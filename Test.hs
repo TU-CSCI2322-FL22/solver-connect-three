@@ -22,13 +22,26 @@ microboardTen    = take 3 (repeat (Just X)) ++ take 6 (repeat Nothing)
 microboardEleven = take 3 (repeat (Just X)) ++ take 6 (repeat Nothing)
 microboardTwelve = take 2 (repeat (Just X)) ++ take 5 (repeat Nothing) ++ take 2 (repeat (Just X))
 
+
+micNearVic1 = ([Just X, Nothing, Just O, Nothing, Just O, Just X, Just O, Nothing, Just X], Just (Won O))
+micNearVic2 = ([Just X, Just O, Just X, Just O, Just X, Just X, Just O, Just X, Just O], Just Tie)
+micNearVic3 = ([Just X, Just X, Just X, Nothing, Just O, Just O, Just O, Nothing, Just X], Just (Won X))
+micNearVic4 = ([Just X, Just X, Just X, Just X, Just O, Just O, Just O, Just O, Just X], Just (Won X))
+micNearVic5 = ([Just X, Just X, Just O, Nothing, Nothing, Nothing, Just O, Just X, Just O], Nothing)
+micNearVic6 = ([Nothing, Just X, Nothing, Just O, Just O, Just O, Just X, Nothing, Just X], Just (Won O))
+micNearVic7 = ([Just X, Just O, Just O, Nothing, Nothing, Just O, Just X, Nothing, Just X], Nothing)
+micNearVic8 = ([Just X, Just O, Just X, Just O, Just X, Just O, Just X, Just X, Just O], Just (Won X))
+micNearVic9 = ([Just O, Just O, Just X, Just X, Just X, Just O, Just O, Just X, Just X], Just Tie)
+
+
+
 -- Other/Optional Test Boards
 -- ERROR: haskell doesn't like the Nothings in microboardTen
 -- microboardTen = [X, O, X, O, playerVarX, playerVarO, Nothing, Nothing, Nothing]
 
-testMacroboard   = [(microboardOne, Nothing), (microboardTwo, Nothing), (microboardThree, Nothing), 
+testMacroboard   = [micNearVic5, (microboardTwo, Nothing), (microboardThree, Nothing), 
                    (microboardFour, Nothing),(microboardFive, Nothing), (microboardSix, Nothing), 
-                   (microboardSeven, Nothing), (microboardEight, Nothing), (microboardNine, Nothing)]
+                   (microboardSeven, Nothing), (microboardEight, Nothing), micNearVic1]
 
 testMacroboard2  = [(microboardTen, Just (Won X)), (microboardEleven, Just (Won X)), (microboardTwelve, Nothing),
                    (microboardFour, Nothing),(microboardFive, Nothing), (microboardSix, Nothing),
@@ -37,6 +50,11 @@ testMacroboard2  = [(microboardTen, Just (Won X)), (microboardEleven, Just (Won 
 testMacroboard3  = [(microboardTen, Just (Won X)), (microboardTwelve, Nothing), (microboardTwelve, Nothing),
                    (microboardFour, Nothing),(microboardFive, Nothing), (microboardSix, Nothing),
                    (microboardSeven, Nothing), (microboardEight, Nothing), (microboardNine, Nothing)]
+
+macboardNearVic  = [micNearVic1, micNearVic2, micNearVic3, micNearVic4, micNearVic5, micNearVic6, micNearVic7, micNearVic8, micNearVic9]
+
+macgameNearVic   = (macboardNearVic, X)
+
 
 testMacrogame = (testMacroboard, X)
 

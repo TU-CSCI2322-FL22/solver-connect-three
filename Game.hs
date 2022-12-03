@@ -42,7 +42,9 @@ checkMacrowin :: Macroboard -> Maybe Victory
 checkMacrowin macroboard = 
      let win = checkWin (macroboardToMicroboard macroboard)
          valPlays = validPlays (macroboard, X)
-     in if valPlays == [] then Just Tie else win
+     in
+         if (win /= Nothing) then win
+         else if valPlays == [] then Just Tie else win
 -- Making a play on a specific tile of a specific board
 
 --We are going to assume play is legal because we will check if
@@ -107,7 +109,7 @@ checkPlay play board =
         microboard          = fst $ head macPlayWithTileHead
         micPlayWithTileHead = drop (numMicTile) microboard
         currentTile         = head micPlayWithTileHead
-    in currentTile == Nothing
+    in currentTile == Nothing && checkWin microboard == Nothing
 
 
 -- TO-DO - I feel pretty confident about this

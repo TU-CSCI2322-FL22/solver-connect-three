@@ -20,15 +20,26 @@ predictWin :: Macrogame -> Victory
 predictWin macgame@(macroboard, player) =
     case checkMacrowin macroboard of 
         Just outcome -> outcome
-        Nothing -> let valPlays = validPlays macgame
-                       childStates = [makePlay play macgame | play <- valPlays]
-                       listOfFutures = [predictWin state | state <- childStates]
-                   in bestVicFor player listOfFutures
+        Nothing -> --if (winningMoves macgame /= []) then Won player
+                  -- else 
+                       let valPlays      = validPlays macgame
+                           childStates   = [makePlay play macgame | play <- valPlays]
+                           listOfFutures = [predictWin state | state <- childStates]
+                       in bestVicFor player listOfFutures
     where bestVicFor player listOfFutures = 
-               if (Won player) `elem` listOfFutures then Won (snd macgame)
-               else if (Tie `elem` listOfFutures) then Tie
-               else if null listOfFutures then traceShow macgame $ error "AAAH" 
-                        else head listOfFutures
+              if (Won player) `elem` listOfFutures then Won (snd macgame)
+                  else if (Tie `elem` listOfFutures) then Tie
+                  else if null listOfFutures then traceShow macgame $ error "AAAH" 
+                   else head listOfFutures
+
+              --if (Tie `elem` listOfFutures) then Tie
+              --else head listOfFutures
+
+
+  --        if (Won player) `elem` listOfFutures then Won (snd macgame)
+            --   else if (Tie `elem` listOfFutures) then Tie
+            --   else if null listOfFutures then traceShow macgame $ error "AAAH" 
+              --          else head listOfFutures
 --if ((snd macgame) == X) then Won O else Won X
 
 {-
@@ -95,17 +106,33 @@ tyingMoves macgame = [ play | play <- (validPlays macgame), checkMacrowin (fst $
 -- These type signatures on Dr. Fogarty's website have "Game" instead of "Macrogame" - be cautious - we might have to write these for microgames too??
 
 bestPlay :: Macrogame -> Play
-bestPlay macgame =
-    let winMoves = winningMoves macgame 
-        valPlays = validPlays macgame
-    in if (winMoves /= []) then head winMoves
-       else aux valPlays (head valPlays)
-                where aux [] best = best
-                      aux (p:ps) best =
-                          let gameAfterPlay = makePlay p macgame
-                          in if (winningMoves gameAfterPlay) /= [] then aux ps best
-                             else if (tyingMoves gameAfterPlay) /= [] then p
-                          else aux ps p
+bestPlay macgame@(macroboard, player) =
+    let valPlays      = validPlays macgame
+        childStates   = [(makePlay play macgame, play) | play <- valPlays]
+        listOfFutures = [(predictWin (fst state), snd state) | state <- childStates]
+    in bestPlayFor player listOfFutures
+    where bestPlayFor :: Player -> [(Victory, Play)] -> Play
+          bestPlayFor player [f] = snd f
+          bestPlayFor player (f:fs) =
+              let vicList = [vic | (vic, play) <- (f:fs)]
+              in
+                  if (fst f) == (Won player) then snd f
+                  else if ((fst f) == Tie && not ((Won player) `elem` vicList)) then snd f
+                  else bestPlayFor player fs
+
+
+
+
+--    let winMoves = winningMoves macgame 
+--        valPlays = validPlays macgame
+--    in if (winMoves /= []) then head winMoves
+--       else aux valPlays (head valPlays)
+--                where aux [] best = best
+--                      aux (p:ps) best =
+--                          let gameAfterPlay = makePlay p macgame
+--                          in if (winningMoves gameAfterPlay) /= [] then aux ps best
+--                             else if (tyingMoves gameAfterPlay) /= [] then p
+--                          else aux ps p
 
 -- Joey
 readGame :: String -> Macrogame
