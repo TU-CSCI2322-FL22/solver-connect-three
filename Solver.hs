@@ -195,5 +195,30 @@ putWinner macgame = do
     let play = bestPlay macgame
     putStrLn $ "(" ++ show (fst play) ++ "," ++ show (snd play) ++ ")"
 
+scoreGame :: Macrogame -> Int
+scoreGame game =
+    --use winsInNMoves to get a score for each board, then take the sum of all the scores where x is positive and o is negative
+    let
+        xScore = 10*sum [winsInNMoves b X 1 | b <- game] + sum [winsInNMoves b X 2 | b <- game]
+        oScore = 10*sum [winsInNMoves b O 1 | b <- game] + sum [winsInNMoves b O 2 | b <- game]
+    in
+        if snd game == X then
+            xScore + 5 - oScore 
+        else if snd game == O then
+            xScore - 5 - oScore
+        else then xScore - oScore
+
+winsInNMoves :: Microboard -> Player -> Int -> Int
+winsInNMoves board player n = 
+    let
+        winMoves = winningMoves board player
+        valPlays = validPlays board
+    in
+        if (winMoves /= []) then 1
+        else if (n == 0) then 0
+        else sum [winsInNMoves (makePlay p board) player (n-1) | p <- valPlays] 
+
+
+        
 --comfort line
 --comfort line 2
