@@ -15,7 +15,6 @@ import System.Environment
 import Data.Char
 import Control.Exception
 
-
 predictWin :: Macrogame -> Victory
 predictWin macgame@(macroboard, player) =
     case checkMacrowin macroboard of 
