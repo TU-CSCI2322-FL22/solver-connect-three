@@ -39,7 +39,18 @@ predictWin macgame@(macroboard, player) =
 -- IF DEPTH 0 THEN CALL EVAL FUNCTION
 predictMightWin :: Macrogame -> Int -> Int
 predictMightWin macgame@(macroboard, player) depth =
-        undefined
+    if (depth == 0) then scoreGame macgame
+    else 
+        case checkMacrowin macroboard of 
+            Just outcome -> scoreGame macgame
+            Nothing      -> let valPlays      = validPlays macgame
+                                childStates   = [makePlay play macgame | play <- valPlays]
+                                listOfFutures = [predictMightWin state (depth - 1) | state <- childStates]
+                            in  bestScoreFor player listOfFutures
+    -- can't use elem for bestScoreFor
+    where bestScoreFor player listOfFutures =
+              if (player == X) then maximum listOfFutures
+              else minimum listOfFutures 
 {-
 WORK IN PROGRESS
 
@@ -92,6 +103,24 @@ bestPlay macgame@(macroboard, player) =
                   if (fst f) == (Won player) then snd f
                   else if ((fst f) == Tie && not ((Won player) `elem` vicList)) then snd f
                   else bestPlayFor player fs
+
+decentPlay :: Macrogame -> Int -> Play
+decentPlay macgame@(macroboard, player) depth =
+    let valPlays      = validPlays macgame
+        childStates   = [(makePlay play macgame, play) | play <- valPlays]
+        listOfFutures = [(predictMightWin (fst state) (depth - 1), snd state) | state <- childStates]
+    in bestPlayFor player (tail listOfFutures) (head listOfFutures)
+    where bestPlayFor :: Player -> [(Int, Play)] -> (Int, Play) -> Play
+          bestPlayFor player [] future = snd future 
+          bestPlayFor player (f:fs) currFut =
+              if (player == X) then
+                  if (fst f > fst currFut) then bestPlayFor player fs f
+                  else bestPlayFor player fs currFut
+              else
+                  if (fst f < fst currFut) then bestPlayFor player fs f
+                  else bestPlayFor player fs currFut
+              
+
 
 -- Joey
 readGame :: String -> Macrogame

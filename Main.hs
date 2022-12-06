@@ -64,7 +64,7 @@ chooseAction :: [Flag] -> Macrogame -> IO ()
 chooseAction flags game
     | (Winner `elem` flags) = putStrLn $ show (bestPlay game)
     | (Verbose `elem` flags) = verboseFunction game (fromJust $ getMove flags game)
-    | otherwise = undefined 
+    | otherwise = giveGoodMove game 5
 
   --exhaustiveDepth :: IO()
   --exhaustiveDepth = putStrLn $ show (bestPlay game)
@@ -85,7 +85,7 @@ verboseFunction game play =
                 else putStrLn $ "The play " ++ show play ++ " is good for X with a score of " ++ show (scoreAfterPlay)
 
 giveGoodMove :: Macrogame -> Int -> IO()
-giveGoodMove game depth = undefined
+giveGoodMove game depth = putStrLn $ show $ decentPlay game depth
 
 
 
