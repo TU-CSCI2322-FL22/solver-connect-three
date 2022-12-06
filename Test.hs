@@ -1,6 +1,7 @@
 module TestCases where
 import Game
 import Solver
+import System.Environment
 
 --Testing data constructors
 playerVarX = X
@@ -62,6 +63,20 @@ testMacrogame2 = (testMacroboard2, X)
 
 testMacrogame3 = (testMacroboard3, X)
 
+
+oAdvantage1 = ([Just O, Nothing, Just X, Nothing, Just X, Just O, Just X, Nothing, Just O], Just (Won X))
+oAdvantage2 = ([Just O, Just X, Just O, Just X, Just O, Just O, Just X, Just O, Just X], Just Tie)
+oAdvantage3 = ([Just O, Just O, Just O, Nothing, Just X, Just X, Just X, Nothing, Just O], Just (Won O))
+oAdvantage4 = ([Just O, Just O, Just O, Just O, Just X, Just X, Just X, Just X, Just O], Just (Won O))
+oAdvantage5 = ([Just O, Just O, Just X, Nothing, Nothing, Nothing, Just X, Just O, Just X], Nothing)
+oAdvantage6 = ([Nothing, Just O, Nothing, Just X, Just X, Just X, Just O, Nothing, Just O], Just (Won X))
+oAdvantage7 = ([Just O, Just X, Just X, Nothing, Nothing, Just X, Just O, Nothing, Just O], Nothing)
+oAdvantage8 = ([Just O, Just X, Just O, Just X, Just O, Just X, Just O, Just O, Just X], Just (Won O))
+oAdvantage9 = ([Just X, Just X, Just O, Just O, Just O, Just X, Just X, Just O, Just O], Just Tie)
+
+macroboardoAdvantage  = [oAdvantage1, oAdvantage2, oAdvantage3, oAdvantage4, oAdvantage5, oAdvantage6, oAdvantage7, oAdvantage8, oAdvantage9]
+
+macrogameoAdvantage   = (macroboardoAdvantage, O)
 
 --the last thing before String in the type definitions is the expected result of the function
 {-testCheckWin :: Microboard -> Victory -> String
