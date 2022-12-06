@@ -37,7 +37,7 @@ predictWin macgame@(macroboard, player) =
 --
 -- SHOULD RETURN A SCORE NOT A VICTORY
 -- IF DEPTH 0 THEN CALL EVAL FUNCTION
-predictMightWin :: Macrogame -> Integer -> Integer
+predictMightWin :: Macrogame -> Int -> Int
 predictMightWin macgame@(macroboard, player) depth =
         undefined
 {-
