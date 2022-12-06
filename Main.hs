@@ -24,6 +24,7 @@ options = [ Option ['w'] ["winner"] (NoArg Winner) "Print out the best move, usi
           , Option ['v'] ["verbose"] (NoArg Verbose) "Output both the move and a description of how good it is: win, lose, tie, or a rating."
           ]
 
+
 getDepth :: [Flag] -> Maybe Int
 getDepth [] = Nothing
 getDepth ((Depth x):_) = 

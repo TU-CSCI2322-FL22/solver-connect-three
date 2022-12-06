@@ -51,38 +51,11 @@ predictMightWin macgame@(macroboard, player) depth =
     where bestScoreFor player listOfFutures =
               if (player == X) then maximum listOfFutures
               else minimum listOfFutures 
-{-
-WORK IN PROGRESS
+ 
 
-    case checkMacrowin macroboard of 
-        Just outcome -> outcome
-        Nothing      -> let valPlays      = validPlays macgame
-                            childStates   = [makePlay play macgame | play <- valPlays]
-                            listOfFutures = [predictMightWin state (depth - 1) | state <- childStates]
-                        in  bestScoreFor player listOfFutures
--- can't use elem for bestScoreFor
-    where bestScoreFor player listOfFutures = 
-              if (Won player) `elem` listOfFutures then Won (snd macgame)
-                  else if (Tie `elem` listOfFutures) then Tie
-                  else if null listOfFutures then traceShow macgame $ error "AAAH" 
-                  else head listOfFutures
--}
 
--- taking in Macrogame to determine winning moves for current Player in (Macroboard, Player) tuple
--- "chooses the move with the best outcome for the current player"
---
--- priority: winning moves for current player
--- secondary: moves that block other play from winning on their next turn
--- 
--- change type signature to exclude [Play] at some point? leave Macrogame -> ...
 winningMoves :: Macrogame -> [Play] --Checking for microboard tiles that result in a macroboard win (and tyingMoves checks for microboard tiles that result in a macroboard tie)
 winningMoves macgame = [ play | play <- (validPlays macgame), checkMacrowin (fst $ makePlay play macgame) == Just (Won (snd macgame))]
-
---winningMicroMoves :: Microgame -> Player -> [Int]
---winningMicroMoves micgame = [play | (_,play) ]
-
---winningOMoves :: Macrogame -> Play
---winningOMoves macgame = [ play | play <- (validPlays macgame), checkMacrowin (fst $ makePlay play macgame) == Won O]
 
 tyingMoves :: Macrogame -> [Play]
 tyingMoves macgame = [ play | play <- (validPlays macgame), checkMacrowin (fst $ makePlay play macgame) == Just Tie]
@@ -187,8 +160,10 @@ scoreGame :: Macrogame -> Int
 scoreGame game =
     --use winsInNMoves to get a score for each board, then take the sum of all the scores where x is positive and o is negative
     let
-        xScore = 20* length [microgame | microgame <- fst game, snd microgame == Just (Won X)] + 10*sum [winsInNMoves (fst game) i X 1 | (b, i) <-zip (fst game) [0..]] + sum [winsInNMoves (fst game) i X 2 | (b, i) <- zip (fst game) [0..]]
-        oScore = 20* length [microgame | microgame <- fst game, snd microgame == Just (Won O)] + 10*sum [winsInNMoves (fst game) i O 1 | (b, i) <- zip (fst game) [0..]] + sum [winsInNMoves (fst game) i O 2 | (b, i) <- zip (fst game) [0..]]
+        xScore = 20* length [microgame | microgame <- fst game, snd microgame == Just (Won X)] + 10*sum [winsInNMoves (fst game) i X 1 | (b, i) <-zip (fst game) [0..]] + 
+            sum [winsInNMoves (fst game) i X 2 | (b, i) <- zip (fst game) [0..]]
+        oScore = 20* length [microgame | microgame <- fst game, snd microgame == Just (Won O)] + 10*sum [winsInNMoves (fst game) i O 1 | (b, i) <- zip (fst game) [0..]] + 
+            sum [winsInNMoves (fst game) i O 2 | (b, i) <- zip (fst game) [0..]]
     in
         if snd game == X then
             xScore + 5 - oScore 
@@ -199,12 +174,13 @@ scoreGame game =
 winsInNMoves :: Macroboard -> Int -> Player -> Int -> Int
 winsInNMoves macboard mictile player n = 
     let
-        valPlays = [play | play <- validPlays (macboard, player), fst play == mictile]
+        --valPlays = [play | play <- validPlays (macboard, player), fst play == mictile]
         winMoves = [play | play <- winningMoves (macboard, player), fst play == mictile]
     in
         if (winMoves /= []) then (length winMoves)
         else if (n == 0) then 0
-        else sum [winsInNMoves (fst (makePlay p (macboard, player))) mictile player (n-1) | p <- valPlays] 
+        else let valPlays = [play | play <- validPlays (macboard, player), fst play == mictile] 
+             in sum [winsInNMoves (fst (makePlay p (macboard, player))) mictile player (n-1) | p <- valPlays] 
 
 
         
