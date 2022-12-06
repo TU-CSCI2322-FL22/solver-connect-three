@@ -87,11 +87,11 @@ makePlay play macgame =
         newMicgame       = (micboardWithPlay, checkWin micboardWithPlay)
         nextPlayer       = if (snd macgame == X) then O else X
     in ((aux3 newMicgame 0 micIdx macboard), nextPlayer) --aux3 will add the microgame back to the macrogame
-        where aux1 (m:ms) 9       = error "Invalid play input (> 8) in makePlay"
+        where aux1 (m:ms) 9 = error "Invalid play input (> 8) in makePlay"
               aux1 (m:ms) currIdx =
                   if (currIdx == (fst play)) then (m, currIdx)
                   else aux1 ms (currIdx + 1)
-              aux2 (t:ts) 9       = error "Invalid play input (> 8) in makePlay"
+              aux2 (t:ts) 9 = error "Invalid play input (> 8) in makePlay"
               aux2 (t:ts) currIdx =
                   if (currIdx == (snd play)) then (Just (snd macgame)):ts
                   else t:(aux2 ts (currIdx + 1))
