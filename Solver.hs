@@ -51,27 +51,11 @@ predictMightWin macgame@(macroboard, player) depth =
     where bestScoreFor player listOfFutures =
               if (player == X) then maximum listOfFutures
               else minimum listOfFutures 
-            --  if (Won player) `elem` listOfFutures then Won (snd macgame)
-            --      else if (Tie `elem` listOfFutures) then Tie
-             --     else if null listOfFutures then traceShow macgame $ error "AAAH" 
-              --    else head listOfFutures
+ 
 
 
--- taking in Macrogame to determine winning moves for current Player in (Macroboard, Player) tuple
--- "chooses the move with the best outcome for the current player"
---
--- priority: winning moves for current player
--- secondary: moves that block other play from winning on their next turn
--- 
--- change type signature to exclude [Play] at some point? leave Macrogame -> ...
 winningMoves :: Macrogame -> [Play] --Checking for microboard tiles that result in a macroboard win (and tyingMoves checks for microboard tiles that result in a macroboard tie)
 winningMoves macgame = [ play | play <- (validPlays macgame), checkMacrowin (fst $ makePlay play macgame) == Just (Won (snd macgame))]
-
---winningMicroMoves :: Microgame -> Player -> [Int]
---winningMicroMoves micgame = [play | (_,play) ]
-
---winningOMoves :: Macrogame -> Play
---winningOMoves macgame = [ play | play <- (validPlays macgame), checkMacrowin (fst $ makePlay play macgame) == Won O]
 
 tyingMoves :: Macrogame -> [Play]
 tyingMoves macgame = [ play | play <- (validPlays macgame), checkMacrowin (fst $ makePlay play macgame) == Just Tie]
@@ -92,6 +76,24 @@ bestPlay macgame@(macroboard, player) =
                   if (fst f) == (Won player) then snd f
                   else if ((fst f) == Tie && not ((Won player) `elem` vicList)) then snd f
                   else bestPlayFor player fs
+
+decentPlay :: Macrogame -> Int -> Play
+decentPlay macgame@(macroboard, player) depth =
+    let valPlays      = validPlays macgame
+        childStates   = [(makePlay play macgame, play) | play <- valPlays]
+        listOfFutures = [(predictMightWin (fst state) (depth - 1), snd state) | state <- childStates]
+    in bestPlayFor player (tail listOfFutures) (head listOfFutures)
+    where bestPlayFor :: Player -> [(Int, Play)] -> (Int, Play) -> Play
+          bestPlayFor player [] future = snd future 
+          bestPlayFor player (f:fs) currFut =
+              if (player == X) then
+                  if (fst f > fst currFut) then bestPlayFor player fs f
+                  else bestPlayFor player fs currFut
+              else
+                  if (fst f < fst currFut) then bestPlayFor player fs f
+                  else bestPlayFor player fs currFut
+              
+
 
 -- Joey
 readGame :: String -> Macrogame
