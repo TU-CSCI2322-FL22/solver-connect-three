@@ -15,6 +15,8 @@ import System.Environment
 import Data.Char
 import Control.Exception
 
+-- ***maybe*** make a type alias where Score = Int
+
 predictWin :: Macrogame -> Victory
 predictWin macgame@(macroboard, player) =
     case checkMacrowin macroboard of 
@@ -31,60 +33,29 @@ predictWin macgame@(macroboard, player) =
                   else if null listOfFutures then traceShow macgame $ error "AAAH" 
                    else head listOfFutures
 
-              --if (Tie `elem` listOfFutures) then Tie
-              --else head listOfFutures
-
-
-  --        if (Won player) `elem` listOfFutures then Won (snd macgame)
-            --   else if (Tie `elem` listOfFutures) then Tie
-            --   else if null listOfFutures then traceShow macgame $ error "AAAH" 
-              --          else head listOfFutures
---if ((snd macgame) == X) then Won O else Won X
-
+-- this is the version with depth for the final milestone
+--
+-- SHOULD RETURN A SCORE NOT A VICTORY
+-- IF DEPTH 0 THEN CALL EVAL FUNCTION
+predictMightWin :: Macrogame -> Integer -> Integer
+predictMightWin macgame@(macroboard, player) depth =
+        undefined
 {-
-                  in if (decentPlays == []) then
-                         if (snd macgame == X) then Won O else Won X
-                     else --everything above this line is determining if there is an easy prediction for the game
-                         let decentGames   = [makePlay play macgame | play <- decentPlays]
-                             predictedWins = [predictWin game | game <- decentGames] --this line definitely sucks and doesn't work
-                             winsX         = [vic | vic <- predictedWins, vic == Won X]
-                             winsO         = [vic | vic <- predictedWins, vic == Won O]
-                         in 
-                            if (length winsX > length winsO) then Won X
-                            else if (length winsO > length winsX) then Won O
-                            else Tie
-                               
--}                         
+WORK IN PROGRESS
 
---predictWin macgame =
---    let play          = bestPlay macgame
---        gameAfterPlay = makePlay play macgame
---    in if (checkMacrowin (fst gameAfterPlay)) == Just (Won X) then Won X --fromJust wasn't working lol
---       else if (checkMacrowin (fst gameAfterPlay)) == Just (Won O) then Won O
---       else if (checkMacrowin (fst gameAfterPlay)) == Just Tie then Tie
---       else predictWin gameAfterPlay
-
---    let valPlays = validPlays macgame
---    in if (winningMoves macgame) /= [] then Won (snd macgame)
---       else aux valPlays macgame
---                where aux [] game = if (snd game == X) then Won O else Won X
---                      aux (p:ps) game =
---                          let gameAfterPlay = makePlay p game
---                          in if (checkMacrowin gameAfterPlay == Just (Won (snd game))) then Won (snd game)
---                             else if (winningMoves gameAfterPlay) /= [] then aux ps
---                                  else undefined
-                                          
-
---let winMoves = winningMoves macgame
---        --tieMoves = tyingMoves macgame
---    in if (winMoves /= []) then Won (snd macgame)
---       else aux (validPlays macgame) macgame
---                where aux [] game = 
---                      aux (m:ms) game =
---                          let gameAfterPlay = makePlay m macgame
---                          in 
---                              if (winningMoves gameAfterPlay) /= [] then aux ms game
---                              else aux (validPlays gameAfterPlay) gameAfterPlay
+    case checkMacrowin macroboard of 
+        Just outcome -> outcome
+        Nothing      -> let valPlays      = validPlays macgame
+                            childStates   = [makePlay play macgame | play <- valPlays]
+                            listOfFutures = [predictMightWin state (depth - 1) | state <- childStates]
+                        in  bestScoreFor player listOfFutures
+-- can't use elem for bestScoreFor
+    where bestScoreFor player listOfFutures = 
+              if (Won player) `elem` listOfFutures then Won (snd macgame)
+                  else if (Tie `elem` listOfFutures) then Tie
+                  else if null listOfFutures then traceShow macgame $ error "AAAH" 
+                  else head listOfFutures
+-}
 
 -- taking in Macrogame to determine winning moves for current Player in (Macroboard, Player) tuple
 -- "chooses the move with the best outcome for the current player"
@@ -121,20 +92,6 @@ bestPlay macgame@(macroboard, player) =
                   if (fst f) == (Won player) then snd f
                   else if ((fst f) == Tie && not ((Won player) `elem` vicList)) then snd f
                   else bestPlayFor player fs
-
-
-
-
---    let winMoves = winningMoves macgame 
---        valPlays = validPlays macgame
---    in if (winMoves /= []) then head winMoves
---       else aux valPlays (head valPlays)
---                where aux [] best = best
---                      aux (p:ps) best =
---                          let gameAfterPlay = makePlay p macgame
---                          in if (winningMoves gameAfterPlay) /= [] then aux ps best
---                             else if (tyingMoves gameAfterPlay) /= [] then p
---                          else aux ps p
 
 -- Joey
 readGame :: String -> Macrogame
