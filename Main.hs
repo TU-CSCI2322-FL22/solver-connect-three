@@ -24,37 +24,22 @@ options = [ Option ['w'] ["winner"] (NoArg Winner) "Print out the best move, usi
           , Option ['v'] ["verbose"] (NoArg Verbose) "Output both the move and a description of how good it is: win, lose, tie, or a rating."
           ]
 
-getDepth :: [Flag] -> Int
-getDepth [] = 1
+getDepth :: [Flag] -> Maybe Int
+getDepth [] = Nothing
 getDepth ((Depth x):_) = 
   case readMaybe x of
     Nothing -> error "Invalid input to depth flag"
-    Just num -> num
+    Just num -> Just num
 getDepth (_:flags) = getDepth flags
 
-getMove :: [Flag] -> Play
-getMove [] = head $ validPlays game
-getMove ((Move x):_) =
+getMove :: [Flag] -> Macrogame -> Maybe Play
+-- getMove [] game = head $ validPlays game
+getMove [] game = Nothing
+getMove ((Move x):_) game =
     case readMaybe x of
         Nothing -> error "Invalid input to move flag"
-        Just move -> move
-getMove (_:flags) = getMove flags
-
-{-
-why is this even here
-
-getStart :: [Flag] -> IO Int
-getStart ((Start x):_) = 
-  case readMaybe x of
-    Nothing -> error "Invalid input to start flag"
-    Just num -> return num
-getStart (_:flags) = getStart flags
-getStart [] = 
-  --needs change
-  do name <- prompt "What is your name"
-     putStrLn $ "Hello " ++ name ++ "!"
-     return $ indexOfName name 
--}
+        Just move -> Just move
+getMove (_:flags) game = getMove flags game
 
 main :: IO ()
 main =
@@ -62,34 +47,45 @@ main =
      let (flags, inputs, error) = getOpt Permute options args
      let fname = if null inputs then "emptyboard.csv" else head inputs
      fileString <- loadGame fname
-     let game = readGame fileString
+     let game = readGame $ showGame fileString
      if Help `elem` flags || (not $ null error)
      then putStrLn $ usageInfo "Usage: Supreme Tic Tac Toe [options] [file]" options
+     --else if null inputs then giveGoodMove game 5
      else do
-       index <- getStart flags
-       (chooseAction flags) index game
+         case getDepth flags of
+             Just depth -> specifiedDepth game depth
+             Nothing -> 
+                 case getMove flags game of
+                     Just move -> makeMoveAndPrintBoard game move
+                     Nothing -> chooseAction flags game
+--     else chooseAction flags game
 
-chooseAction :: [Flag] -> Int -> Macrogame -> IO ()
-chooseAction flags 
-  | Winner `elem` flags = putStrLn $ show (bestPlay game)
-  | Depth `elem` flags = specifiedDepth (getDepth flags)
-  | Move `elem` flags =  makeMoveAndPrintBoard (getMove flags)
-  | Verbose `elem` flags = verboseFunction
-  | otherwise = giveGoodMove 5
+chooseAction :: [Flag] -> Macrogame -> IO ()
+chooseAction flags game
+    | (Winner `elem` flags) = putStrLn $ show (bestPlay game)
+    | (Verbose `elem` flags) = verboseFunction game (fromJust $ getMove flags game)
+    | otherwise = undefined 
 
   --exhaustiveDepth :: IO()
   --exhaustiveDepth = putStrLn $ show (bestPlay game)
 
-specifiedDepth :: Int -> IO()
-specifiedDepth depth = putStrLn $ show (predictMightWin game depth)
+specifiedDepth :: Macrogame -> Int -> IO()
+specifiedDepth game depth = putStrLn $ show (predictMightWin game depth)
 
-makeMoveAndPrintBoard :: Play -> IO()
-makeMoveAndPrintBoard play = putStrLn $ showMacroboard (makePlay play game)
+makeMoveAndPrintBoard :: Macrogame -> Play -> IO()
+-- I hope you like the generous use of the dollar sign notation in this very line of code
+makeMoveAndPrintBoard game play = putStrLn $ showMacroboard $ fst $ makePlay play game
 
-verboseFunction :: Play -> IO()
-verboseFunction play =
+verboseFunction :: Macrogame -> Play -> IO()
+verboseFunction game play =
+-- I love backwards syntax; don't you??????????????????????
         let scoreAfterPlay = scoreGame (makePlay play game)
         in 
                 if (scoreAfterPlay < 0) then putStrLn $ "The play " ++ show play ++ " is good for O with a score of " ++ show (-1 * scoreAfterPlay) 
                 else putStrLn $ "The play " ++ show play ++ " is good for X with a score of " ++ show (scoreAfterPlay)
+
+giveGoodMove :: Macrogame -> Int -> IO()
+giveGoodMove game depth = undefined
+
+
 
