@@ -97,6 +97,9 @@ predictWin macgame@(macroboard, player) =
 winningMoves :: Macrogame -> [Play] --Checking for microboard tiles that result in a macroboard win (and tyingMoves checks for microboard tiles that result in a macroboard tie)
 winningMoves macgame = [ play | play <- (validPlays macgame), checkMacrowin (fst $ makePlay play macgame) == Just (Won (snd macgame))]
 
+--winningMicroMoves :: Microgame -> Player -> [Int]
+--winningMicroMoves micgame = [play | (_,play) ]
+
 --winningOMoves :: Macrogame -> Play
 --winningOMoves macgame = [ play | play <- (validPlays macgame), checkMacrowin (fst $ makePlay play macgame) == Won O]
 
@@ -199,24 +202,24 @@ scoreGame :: Macrogame -> Int
 scoreGame game =
     --use winsInNMoves to get a score for each board, then take the sum of all the scores where x is positive and o is negative
     let
-        xScore = 10*sum [winsInNMoves b X 1 | b <- game] + sum [winsInNMoves b X 2 | b <- game]
-        oScore = 10*sum [winsInNMoves b O 1 | b <- game] + sum [winsInNMoves b O 2 | b <- game]
+        xScore = 20* length [microgame | microgame <- fst game, snd microgame == Just (Won X)] + 10*sum [winsInNMoves (fst game) i X 1 | (b, i) <-zip (fst game) [0..]] + sum [winsInNMoves (fst game) i X 2 | (b, i) <- zip (fst game) [0..]]
+        oScore = 20* length [microgame | microgame <- fst game, snd microgame == Just (Won O)] + 10*sum [winsInNMoves (fst game) i O 1 | (b, i) <- zip (fst game) [0..]] + sum [winsInNMoves (fst game) i O 2 | (b, i) <- zip (fst game) [0..]]
     in
         if snd game == X then
             xScore + 5 - oScore 
         else if snd game == O then
             xScore - 5 - oScore
-        else then xScore - oScore
+        else xScore - oScore
 
-winsInNMoves :: Microboard -> Player -> Int -> Int
-winsInNMoves board player n = 
+winsInNMoves :: Macroboard -> Int -> Player -> Int -> Int
+winsInNMoves macboard mictile player n = 
     let
-        winMoves = winningMoves board player
-        valPlays = validPlays board
+        valPlays = [play | play <- validPlays (macboard, player), fst play == mictile]
+        winMoves = [play | play <- winningMoves (macboard, player), fst play == mictile]
     in
-        if (winMoves /= []) then 1
+        if (winMoves /= []) then (length winMoves)
         else if (n == 0) then 0
-        else sum [winsInNMoves (makePlay p board) player (n-1) | p <- valPlays] 
+        else sum [winsInNMoves (fst (makePlay p (macboard, player))) mictile player (n-1) | p <- valPlays] 
 
 
         
