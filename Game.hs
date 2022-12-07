@@ -1,5 +1,7 @@
 module Game where
 import Data.Maybe
+import GHC.Stack
+import Debug.Trace
 
 data Player = X | O deriving (Show, Eq)
 type Play = (Int, Int) --First int is tile number of the macroboard, second int is the tile number of the microboard)
@@ -31,6 +33,7 @@ checkWin [zero, one, two, three, four, five, six, seven, eight] =
     else if (two == four && four == six && two /= Nothing) then Just $ Won (fromJust two)
     else if (zero /= Nothing && one /= Nothing && two /= Nothing && three /= Nothing && four /= Nothing && five /= Nothing && six /= Nothing && seven /= Nothing && eight /= Nothing) then Just Tie
     else Nothing
+--checkWin tag other = errorWithStackTrace $ "CheckWin failure on : " ++ tag ++ " : " ++ show other
 
 macroboardToMicroboard :: Macroboard -> Microboard
 macroboardToMicroboard [] = []
@@ -45,37 +48,12 @@ checkMacrowin macroboard =
      in
          if (win /= Nothing) then win
          else if valPlays == [] then Just Tie else win
--- Making a play on a specific tile of a specific board
 
+
+
+-- Making a play on a specific tile of a specific board
 --We are going to assume play is legal because we will check if
 --any user-inputted plays are legal in our actual implementation
-
---playToTile :: Play -> Int
---playToTile (0,0) = 0
---playToTile (0,1) = 1
---playToTile (0,2) = 2
---playToTile (1,0) = 3
---playToTile (1,1) = 4
---playToTile (1,2) = 5
---playToTile (2,0) = 6
---playToTile (2,1) = 7
---playToTile (2,2) = 8
-
---makeMicroPlay :: Microgame -> Play -> Player -> Microgame
---makeMicroPlay game play player =
---    let numOfTile   = playToTile play
---        board       = fst game
---        vicState    = snd game
---        newBoard    = [if ((board !! numOfTile) == tl) then Just player else tl | tl <- board]
---        newVicState = checkWin newBoard
---    in (newBoard, newVicState)
-
---makeMacroPlay :: Macrogame -> Player ->  Macrogame
---makeMacroPlay macrogame nextPlayer = 
---    let board = fst macrogame
---    in  ([(b, checkWin b) | (b, v) <- board], nextPlayer)
-
-
 makePlay :: Play -> Macrogame -> Macrogame
 makePlay play macgame =
     let macboard         = fst macgame
@@ -87,11 +65,11 @@ makePlay play macgame =
         newMicgame       = (micboardWithPlay, checkWin micboardWithPlay)
         nextPlayer       = if (snd macgame == X) then O else X
     in ((aux3 newMicgame 0 micIdx macboard), nextPlayer) --aux3 will add the microgame back to the macrogame
-        where aux1 (m:ms) 9       = error "Invalid play input (> 8) in makePlay"
+        where aux1 (m:ms) 9 = error "Invalid play input (> 8) in makePlay"
               aux1 (m:ms) currIdx =
                   if (currIdx == (fst play)) then (m, currIdx)
                   else aux1 ms (currIdx + 1)
-              aux2 (t:ts) 9       = error "Invalid play input (> 8) in makePlay"
+              aux2 (t:ts) 9 = error "Invalid play input (> 8) in makePlay"
               aux2 (t:ts) currIdx =
                   if (currIdx == (snd play)) then (Just (snd macgame)):ts
                   else t:(aux2 ts (currIdx + 1))
@@ -109,7 +87,14 @@ checkPlay play board =
         microboard          = fst $ head macPlayWithTileHead
         micPlayWithTileHead = drop (numMicTile) microboard
         currentTile         = head micPlayWithTileHead
-    in currentTile == Nothing && checkWin microboard == Nothing
+    in (currentTile == Nothing && (checkWin microboard)  == Nothing)
+
+
+checkMicroPlay :: Int -> Microboard -> Bool
+checkMicroPlay tile board =
+    let playWithTileHead = drop tile board
+        currentTile = head playWithTileHead
+    in currentTile == Nothing && checkWin board == Nothing
 
 
 -- TO-DO - I feel pretty confident about this
@@ -123,6 +108,9 @@ checkLegal play = play `elem` [(x,y) | x <- [0..8], y <- [0..8]]
 -- (ORIGINAL): legalPlays macrogame = undefined
 validPlays :: Macrogame -> [Play]
 validPlays game = [(x,y) | x <- [0..8], y <- [0..8], checkPlay (x,y) (fst game)]
+
+validMicroPlays :: Microgame -> [Int]
+validMicroPlays micgame = [y | y <- [0..8], checkMicroPlay y (fst micgame)]
 
 -- Show function
 

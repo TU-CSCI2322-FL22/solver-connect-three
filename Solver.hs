@@ -60,6 +60,16 @@ winningMoves macgame = [ play | play <- (validPlays macgame), checkMacrowin (fst
 tyingMoves :: Macrogame -> [Play]
 tyingMoves macgame = [ play | play <- (validPlays macgame), checkMacrowin (fst $ makePlay play macgame) == Just Tie]
 
+winningMicroMoves :: Microgame -> Player -> [Int]
+winningMicroMoves micgame player = [ play | play <- (validMicroPlays micgame), checkWin (makeMicroPlay play (fst micgame) player 0) == Just (Won player) ]
+
+makeMicroPlay :: Int -> Microboard -> Player -> Int -> Microboard
+makeMicroPlay tl (t:ts) player idx = --NEVER EVER USE THIS OUTSIDE THE CONTEXT OF SCOREGAME
+    if (tl == idx) then [Just player] ++ ts
+    else [t] ++ (makeMicroPlay tl ts player (idx + 1))
+
+
+
 -- These type signatures on Dr. Fogarty's website have "Game" instead of "Macrogame" - be cautious - we might have to write these for microgames too??
 
 bestPlay :: Macrogame -> Play
@@ -110,7 +120,7 @@ readGame str =
                 board6 = [if cell == "X" then Just X else if cell == "O" then Just O else Nothing | cell <- splitOn "," b6]
                 board7 = [if cell == "X" then Just X else if cell == "O" then Just O else Nothing | cell <- splitOn "," b7]
                 board8 = [if cell == "X" then Just X else if cell == "O" then Just O else Nothing | cell <- splitOn "," b8]
-        in
+        in 
                 ([(board0, checkWin board0), (board1, checkWin board1), (board2, checkWin board2), (board3, checkWin board3), (board4, checkWin board4), (board5, checkWin board5), (board6, checkWin board6), (board7, checkWin board7), (board8, checkWin board8)], curr)
 
 -- Joey
@@ -121,14 +131,14 @@ showGame macgame =
         curr = snd macgame
      -- [b0, b1, b2, b3, b4, b5, b6, b7, b8] = fst macgame
         currentPlayer = if curr == X then "X" else "O"
-        board0 = [if cell == Just X then "X" else if cell == Just O then "O" else "E" | cell <- fst b0]
-        board1 = [if cell == Just X then "X" else if cell == Just O then "O" else "E" | cell <- fst b1]
-        board2 = [if cell == Just X then "X" else if cell == Just O then "O" else "E" | cell <- fst b2]
-        board3 = [if cell == Just X then "X" else if cell == Just O then "O" else "E" | cell <- fst b3]
-        board4 = [if cell == Just X then "X" else if cell == Just O then "O" else "E" | cell <- fst b4]
-        board5 = [if cell == Just X then "X" else if cell == Just O then "O" else "E" | cell <- fst b5]
-        board6 = [if cell == Just X then "X" else if cell == Just O then "O" else "E" | cell <- fst b6]
-        board7 = [if cell == Just X then "X" else if cell == Just O then "O" else "E" | cell <- fst b7]
+        board0 = [if cell == Just X then "X," else if cell == Just O then "O," else "E," | cell <- fst b0]
+        board1 = [if cell == Just X then "X," else if cell == Just O then "O," else "E," | cell <- fst b1]
+        board2 = [if cell == Just X then "X," else if cell == Just O then "O," else "E," | cell <- fst b2]
+        board3 = [if cell == Just X then "X," else if cell == Just O then "O," else "E," | cell <- fst b3]
+        board4 = [if cell == Just X then "X," else if cell == Just O then "O," else "E," | cell <- fst b4]
+        board5 = [if cell == Just X then "X," else if cell == Just O then "O," else "E," | cell <- fst b5]
+        board6 = [if cell == Just X then "X," else if cell == Just O then "O," else "E," | cell <- fst b6]
+        board7 = [if cell == Just X then "X," else if cell == Just O then "O," else "E," | cell <- fst b7]
         board8 = [if cell == Just X then "X" else if cell == Just O then "O" else "E" | cell <- fst b8]
     in
         unlines [currentPlayer, concat board0, concat board1, concat board2, concat board3, concat board4, concat board5, concat board6, concat board7, concat board8] 
@@ -144,7 +154,9 @@ writeGame macgame flpath =
 loadGame :: FilePath -> IO Macrogame
 loadGame flpath = do
     str <- readFile flpath 
-    evaluate $ readGame str --wtf
+    let g = readGame str
+    putStrLn $ show g
+    return $ g
 
 --     str <- readFile flpath
 --     retgame <- readGame str
@@ -157,30 +169,52 @@ putWinner macgame = do
     putStrLn $ "(" ++ show (fst play) ++ "," ++ show (snd play) ++ ")"
 
 scoreGame :: Macrogame -> Int
-scoreGame game =
-    --use winsInNMoves to get a score for each board, then take the sum of all the scores where x is positive and o is negative
-    let
-        xScore = 20* length [microgame | microgame <- fst game, snd microgame == Just (Won X)] + 10*sum [winsInNMoves (fst game) i X 1 | (b, i) <-zip (fst game) [0..]] + 
-            sum [winsInNMoves (fst game) i X 2 | (b, i) <- zip (fst game) [0..]]
-        oScore = 20* length [microgame | microgame <- fst game, snd microgame == Just (Won O)] + 10*sum [winsInNMoves (fst game) i O 1 | (b, i) <- zip (fst game) [0..]] + 
-            sum [winsInNMoves (fst game) i O 2 | (b, i) <- zip (fst game) [0..]]
-    in
-        if snd game == X then
-            xScore + 5 - oScore 
-        else if snd game == O then
-            xScore - 5 - oScore
+scoreGame game = 
+    let xWinningMoves = [winningMicroMoves microgame X | microgame <- fst game]
+        oWinningMoves = [winningMicroMoves microgame O | microgame <- fst game]
+        xScore = 20 * length [microgame | microgame <- fst game, snd microgame == Just (Won X)] +
+                     10 * length xWinningMoves
+                     + length [state | state <- xWinningChildStates xWinningMoves, (checkWin state) == Just (Won X)]
+        oScore = 20 * length [microgame | microgame <- fst game, snd microgame == Just (Won O)] +
+                     10 * length oWinningMoves
+                     + length [state | state <- oWinningChildStates oWinningMoves, (checkWin state) == Just (Won O)]
+    in 
+        if snd game == X then  xScore + 5 - oScore 
+        else if snd game == O then (xScore - 5) - oScore
         else xScore - oScore
+  where xWinningChildStates :: [[Int]] -> [Microboard]
+        xWinningChildStates [] = []
+        xWinningChildStates (l:ls) = [makeMicroPlay tl (fst microgame) X 0 | microgame <- fst game, tl <- l] ++ xWinningChildStates ls
+      
+        oWinningChildStates :: [[Int]] -> [Microboard]
+        oWinningChildStates [] = []
+        oWinningChildStates (l:ls) = [makeMicroPlay tl (fst microgame) O 0 | microgame <- fst game, tl <- l] ++ oWinningChildStates ls
+            
 
-winsInNMoves :: Macroboard -> Int -> Player -> Int -> Int
-winsInNMoves macboard mictile player n = 
-    let
-        --valPlays = [play | play <- validPlays (macboard, player), fst play == mictile]
-        winMoves = [play | play <- winningMoves (macboard, player), fst play == mictile]
-    in
-        if (winMoves /= []) then (length winMoves)
-        else if (n == 0) then 0
-        else let valPlays = [play | play <- validPlays (macboard, player), fst play == mictile] 
-             in sum [winsInNMoves (fst (makePlay p (macboard, player))) mictile player (n-1) | p <- valPlays] 
+
+    --use winsInNMoves to get a score for each board, then take the sum of all the scores where x is positive and o is negative
+   -- let
+   --     xScore = 20* length [microgame | microgame <- fst game, snd microgame == Just (Won X)] + 10*sum [winsInNMoves (fst game) i X 1 | (b, i) <-zip (fst game) [0..]] + 
+   --         sum [winsInNMoves (fst game) i X 2 | (b, i) <- zip (fst game) [0..]]
+   --     oScore = 20* length [microgame | microgame <- fst game, snd microgame == Just (Won O)] + 10*sum [winsInNMoves (fst game) i O 1 | (b, i) <- zip (fst game) [0..]] + 
+   --         sum [winsInNMoves (fst game) i O 2 | (b, i) <- zip (fst game) [0..]]
+   -- in
+    --    if snd game == X then
+    --        xScore + 5 - oScore 
+   --     else if snd game == O then
+  --          xScore - 5 - oScore
+  --      else xScore - oScore
+
+--winsInNMoves :: Macroboard -> Int -> Player -> Int -> Int
+--winsInNMoves macboard mictile player n = 
+--    let
+--        --valPlays = [play | play <- validPlays (macboard, player), fst play == mictile]
+--        winMoves = [play | play <- winningMoves (macboard, player), fst play == mictile]
+--    in
+--        if (winMoves /= []) then (length winMoves)
+--        else if (n == 0) then 0
+--        else let valPlays = [play | play <- validPlays (macboard, player), fst play == mictile] 
+--             in sum [winsInNMoves (fst (makePlay p (macboard, player))) mictile player (n-1) | p <- valPlays] 
 
 
         
