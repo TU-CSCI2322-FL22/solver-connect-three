@@ -21,7 +21,7 @@ options = [ Option ['w'] ["winner"] (NoArg Winner) "Print out the best move usin
           , Option ['d'] ["depth"] (ReqArg Depth "<num>") "Prints out the best move within a cutoff depth of potential future moves." 
           , Option ['h'] ["help"] (NoArg Help) "Prints usage information."
           , Option ['m'] ["move"] (ReqArg Move "<move>") "Makes a move and prints out the resulting board, in the input format, to stdout. The move should be formatted with quotes around a tuple."
-          , Option ['v'] ["verbose"] (NoArg Verbose) "Outputs both the move and a description of how good it is."
+          , Option ['v'] ["verbose"] (NoArg Verbose) "Outputs both the move and a description of how good it is (call with -m)."
           ]
 
 
@@ -50,7 +50,8 @@ main =
      else do
              let fname = if null inputs then "ZZemptyboard.csv" else head inputs
              fileString <- loadGame fname
-             let game = readGame $ showGame fileString
+             let game = fileString
+             --let game = loadGame fname
              chooseAction flags game
              --specifiedDepth game (getDepth flags)
           --   Nothing -> 
