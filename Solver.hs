@@ -168,27 +168,118 @@ putWinner macgame = do
     let play = bestPlay macgame
     putStrLn $ "(" ++ show (fst play) ++ "," ++ show (snd play) ++ ")"
 
+
 scoreGame :: Macrogame -> Int
-scoreGame game = 
-    let xWinningMoves = [winningMicroMoves microgame X | microgame <- fst game]
-        oWinningMoves = [winningMicroMoves microgame O | microgame <- fst game]
-        xScore = 20 * length [microgame | microgame <- fst game, snd microgame == Just (Won X)] +
-                     10 * length xWinningMoves
-                     + length [state | state <- xWinningChildStates xWinningMoves, (checkWin state) == Just (Won X)]
-        oScore = 20 * length [microgame | microgame <- fst game, snd microgame == Just (Won O)] +
-                     10 * length oWinningMoves
-                     + length [state | state <- oWinningChildStates oWinningMoves, (checkWin state) == Just (Won O)]
-    in 
-        if snd game == X then  xScore + 5 - oScore 
-        else if snd game == O then (xScore - 5) - oScore
-        else xScore - oScore
-  where xWinningChildStates :: [[Int]] -> [Microboard]
-        xWinningChildStates [] = []
-        xWinningChildStates (l:ls) = [makeMicroPlay tl (fst microgame) X 0 | microgame <- fst game, tl <- l] ++ xWinningChildStates ls
-      
-        oWinningChildStates :: [[Int]] -> [Microboard]
-        oWinningChildStates [] = []
-        oWinningChildStates (l:ls) = [makeMicroPlay tl (fst microgame) O 0 | microgame <- fst game, tl <- l] ++ oWinningChildStates ls
+scoreGame game =
+    let board = fst game
+        xScore = sum [scoreMicrogame (fst micgame) X 0 | micgame <- board]
+        oScore = sum [scoreMicrogame (fst micgame) O 0 | micgame <- board]
+    in if (snd game == X) then 5 + (xScore - oScore)
+       else (xScore - oScore) - 5
+
+  where indexBoard :: Microboard -> Int -> Maybe Player
+        indexBoard [a,b,c,d,e,f,g,h,i] 0 = a
+        indexBoard [a,b,c,d,e,f,g,h,i] 1 = b
+        indexBoard [a,b,c,d,e,f,g,h,i] 2 = c
+        indexBoard [a,b,c,d,e,f,g,h,i] 3 = d
+        indexBoard [a,b,c,d,e,f,g,h,i] 4 = e
+        indexBoard [a,b,c,d,e,f,g,h,i] 5 = f
+        indexBoard [a,b,c,d,e,f,g,h,i] 6 = g
+        indexBoard [a,b,c,d,e,f,g,h,i] 7 = h
+        indexBoard [a,b,c,d,e,f,g,h,i] 8 = i
+
+        checkSpaces :: Int -> [(Int, Int)]
+        checkSpaces 0 = [(1,2), (4,8), (3,6)]
+        checkSpaces 1 = [(0,2), (4,7)]
+        checkSpaces 2 = [(4,6), (0,1), (5,8)]
+        checkSpaces 3 = [(0,6), (4,5)]
+        checkSpaces 4 = [(3,5), (1,7), (0,8), (2,6)]
+        checkSpaces 5 = [(2,8), (3,4)]
+        checkSpaces 6 = [(0,3), (7,8), (2,4)]
+        checkSpaces 7 = [(1,4), (6,8)]
+        checkSpaces 8 = [(2,5), (6,7), (0,4)]
+        checkSpaces a = []
+ 
+        scoreMicrogame :: Microboard -> Player -> Int -> Int
+        scoreMicrogame micboard player 9 = 0
+        scoreMicrogame micboard player tileNum =
+            let spaces = checkSpaces tileNum
+                scoreLST = [if (indexBoard micboard (fst space)) == Nothing && (indexBoard micboard (snd space)) == Nothing then 1
+                                else if (indexBoard micboard (fst space)) == Just player && (indexBoard micboard (snd space)) == Just player then 20
+                                else if (indexBoard micboard (fst space)) == Just player && (indexBoard micboard (snd space)) == Nothing then 10
+                                else if (indexBoard micboard (fst space)) == Nothing && (indexBoard micboard (snd space)) == Just player then 10
+                                else 0 | space <- spaces, indexBoard micboard tileNum == Just player]
+                score   = trace (show player ++ ": " ++ show scoreLST) (sum scoreLST)
+            in
+                if (tileNum `elem` [0,2,6,8]) then (2 * score) + scoreMicrogame micboard player (tileNum + 1)
+                else if (tileNum == 4) then (4 * score) + scoreMicrogame micboard player (tileNum + 1)
+                else score + scoreMicrogame micboard player (tileNum + 1)
+
+        {-
+        determinePlayerScore :: Macroboard -> Player -> Int -> Int
+        determinePlayerScore board player 9 = 0
+        determinePlayerScore (b:bs) player tileNum =
+            let spaces = checkSpaces tileNum
+                micboard = fst b
+                scoreLST = [if (indexBoard micboard (fst space)) == Nothing && (indexBoard micboard (snd space)) == Nothing then 1
+                                else if (indexBoard micboard (fst space)) == Just player && (indexBoard micboard (snd space)) == Just player then 20
+                                else if (indexBoard micboard (fst space)) == Just player && (indexBoard micboard (snd space)) == Nothing then 10
+                                else if (indexBoard micboard (fst space)) == Nothing && (indexBoard micboard (snd space)) == Just player then 10
+                                else 0 | space <- spaces, indexBoard micboard tileNum == Just player]
+                score   = trace (show player ++ ": " ++ show scoreLST) (sum scoreLST)
+            in
+                if (tileNum `elem` [0,2,6,8]) then (2 * score) + determinePlayerScore bs player (tileNum + 1)
+                else if (tileNum == 4) then (4 * score) + determinePlayerScore bs player (tileNum + 1)
+                else score + determinePlayerScore bs player (tileNum + 1)
+-}
+
+{-
+
+    let valPlays = validPlays game
+        PotentialWins = potWins valPlays [] [] X
+        oPotentialWins = potWins valPlays [] [] O
+        xPotTwoMoves = potWins (snd xPotentialWins) [] [] X
+        oPotTwoMoves = potWins (snd oPotentialWins) [] [] O
+        xScore = 20 * length [microgame | microgame <- fst game, snd microgame == Just (Won X)]
+                     + 10 * length xPotentialWins + length xPotTwoMoves
+        oScore = 20 * length [microgame | microgame <- fst game, snd microgame == Just (Won O)]
+                     + 10 * length oPotentialWins + length oPotTwoMoves   
+    in if snd game == X then  xScore + 5 - oScore 
+       else if snd game == O then (xScore - 5) - oScore
+       else xScore - oScore
+ where potWins :: [Play] -> [Play] -> [Play] -> Player -> ([Play], [Play])
+       potWins [] winMoves otherMoves player = (winMoves, otherMoves)
+       potWins (p:ps) winMoves otherMoves player =
+           let micboard = fst $ head (take (snd p + 1) (fst game))
+               stateAfterP = makeMicroPlay (fst p) micboard player 0
+           in if (checkWin stateAfterP == Just (Won player)) then potWins ps (p:winMoves) otherMoves player
+              else potWins ps winMoves (p:otherMoves) player
+       
+-}
+
+
+
+--scoreGame :: Macrogame -> Int
+--scoreGame game = 
+--    let xWinningMoves = [winningMicroMoves microgame X | microgame <- fst game]
+--        oWinningMoves = [winningMicroMoves microgame O | microgame <- fst game]
+--        xScore = 20 * length [microgame | microgame <- fst game, snd microgame == Just (Won X)] +
+--                     10 * length xWinningMoves
+--                     + length [state | state <- xWinningChildStates xWinningMoves, (checkWin state) == Just (Won X)]
+--        oScore = 20 * length [microgame | microgame <- fst game, snd microgame == Just (Won O)] +
+--                     10 * length oWinningMoves
+--                     + length [state | state <- oWinningChildStates oWinningMoves, (checkWin state) == Just (Won O)]
+--    in 
+--        if snd game == X then  xScore + 5 - oScore 
+--        else if snd game == O then (xScore - 5) - oScore
+--        else xScore - oScore
+--  where xWinningChildStates :: [[Int]] -> [Microboard]
+--        xWinningChildStates [] = []
+--        xWinningChildStates (l:ls) = [makeMicroPlay tl (fst microgame) X 0 | microgame <- fst game, tl <- l] ++ xWinningChildStates ls
+--      
+--        oWinningChildStates :: [[Int]] -> [Microboard]
+--        oWinningChildStates [] = []
+--        oWinningChildStates (l:ls) = [makeMicroPlay tl (fst microgame) O 0 | microgame <- fst game, tl <- l] ++ oWinningChildStates ls
             
 
 
@@ -215,7 +306,6 @@ scoreGame game =
 --        else if (n == 0) then 0
 --        else let valPlays = [play | play <- validPlays (macboard, player), fst play == mictile] 
 --             in sum [winsInNMoves (fst (makePlay p (macboard, player))) mictile player (n-1) | p <- valPlays] 
-
 
         
 --comfort line

@@ -38,7 +38,7 @@ getMove [] game = Nothing
 getMove ((Move x):_) game =
     case readMaybe x of
         Nothing -> error "Invalid input to move flag"
-        Just move -> Just (fst move - 1, snd move - 1) --Our moves are 0-indexed internally, so this is to handle 1-indexing on inputs
+        Just move -> Just (fst move - 1, snd move -1) --Our moves are 0-indexed internally, so this is to handle 1-indexing on inputs
 getMove (_:flags) game = getMove flags game
 
 main :: IO ()
@@ -62,7 +62,7 @@ chooseAction flags game
                        Just move ->
                            if (Verbose `elem` flags) then
                                let scoreAfterPlay = scoreGame (makePlay move game)
-                                   formattedMove = ((fst move + 1), (snd move + 1))
+                                   formattedMove = (fst move + 1, snd move + 1)
                                in
                                    if (scoreAfterPlay < 0) then putStrLn $ "The play " ++ show formattedMove ++ " is good for O with a score of " ++ show (-1 * scoreAfterPlay) ++ "."
                                    else putStrLn $ "The play " ++ show formattedMove ++ " is good for X with a score of " ++ show (scoreAfterPlay) ++ "."
