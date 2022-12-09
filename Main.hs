@@ -10,7 +10,6 @@ import Text.Read (readMaybe)
 import System.Environment
 import System.Console.GetOpt
 import Data.Maybe
-import Data.List.Split
 import Debug.Trace
 import Control.Exception
 
@@ -20,8 +19,8 @@ options :: [OptDescr Flag]
 options = [ Option ['w'] ["winner"] (NoArg Winner) "Print out the best move using an exhaustive search." 
           , Option ['d'] ["depth"] (ReqArg Depth "<num>") "Prints out the best move within a cutoff depth of potential future moves." 
           , Option ['h'] ["help"] (NoArg Help) "Prints usage information."
-          , Option ['m'] ["move"] (ReqArg Move "<move>") "Makes a move and prints out the resulting board (the move should be formatted with quotes around a tuple)."
-          , Option ['v'] ["verbose"] (NoArg Verbose) "Outputs both the move and a description of how good it is (call with along with -m)."
+          , Option ['m'] ["move"] (ReqArg Move "<move>") "Makes a move and prints out the resulting board (the move should be formatted with quotes around a tuple, e.g. ''(1,1)'')."
+          , Option ['v'] ["verbose"] (NoArg Verbose) "Outputs both the move and a description of how good it is (call after -m <move>)."
           ]
 
 
@@ -38,19 +37,30 @@ getMove [] game = Nothing
 getMove ((Move x):_) game =
     case readMaybe x of
         Nothing -> error "Invalid input to move flag"
-        Just move -> Just (fst move - 1, snd move -1) --Our moves are 0-indexed internally, so this is to handle 1-indexing on inputs
+        Just move -> 
+            let valPlays = validPlays game
+            in if (move `elem` valPlays) then Just (fst move - 1, snd move -1)
+               else error $ "Invalid move inputted, please try again." --Our moves are 0-indexed internally, so this is to handle 1-indexing on inputs
 getMove (_:flags) game = getMove flags game
 
 main :: IO ()
 main =
   do args <- getArgs
      let (flags, inputs, error) = getOpt Permute options args
-     if Help `elem` flags || (not $ null error)
-     then putStrLn $ usageInfo "Usage: Supreme Tic Tac Toe [options] [file]" options
+     --if Help `elem` flags || (not $ null error)
+     --then putStrLn $ usageInfo "Usage: Supreme Tic Tac Toe [options] [file]" options
+
+     if Help `elem` flags then putStrLn $ usageInfo "Usage: Supreme Tic Tac Toe [options] [file]" options
+     else if (not $ null error) then
+          do
+             putStrLn "Hmm... There seems to be invalid inputs. Here's the usage info: "
+             putStrLn $ usageInfo "Usage: Supreme Tic Tac Toe [options] [file]" options
      else do
              let fname = if null inputs then "ZZemptyboard.csv" else head inputs
              game <- loadGame fname
-             chooseAction flags game
+             case checkMacrowin (fst game) of
+                 Just outcome -> putStrLn "This game is already over."
+                 Nothing -> chooseAction flags game
 
 
 chooseAction :: [Flag] -> Macrogame -> IO ()
